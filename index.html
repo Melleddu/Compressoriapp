@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>MacchineLab — Simulatore &amp; Risolutore per Macchine a Fluido</title>
+<title>MacchineLab — Simulatore, Formulario &amp; Risolutore per Macchine a Fluido</title>
 <style>
   :root {
     --bg-app: #090d16;
@@ -45,7 +45,7 @@
 
   /* Header & Global Fluid Bar */
   header {
-    background: rgba(17, 24, 39, 0.94);
+    background: rgba(17, 24, 39, 0.96);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
     position: sticky;
@@ -55,7 +55,7 @@
   }
 
   .header-top {
-    max-width: 1280px;
+    max-width: 1340px;
     margin: 0 auto;
     display: flex;
     flex-wrap: wrap;
@@ -96,6 +96,13 @@
     display: block;
   }
 
+  .header-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
   .fluid-bar {
     display: flex;
     flex-wrap: wrap;
@@ -105,7 +112,7 @@
     border: 1px solid var(--border);
     padding: 5px 10px;
     border-radius: 8px;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
   }
 
   .fluid-bar label {
@@ -120,17 +127,111 @@
     border-radius: 5px;
     padding: 3px 6px;
     font-family: var(--font-mono);
-    font-size: 0.78rem;
+    font-size: 0.76rem;
   }
 
   .fluid-bar input {
-    width: 62px;
+    width: 58px;
     text-align: right;
+  }
+
+  .fluid-derived {
+    display: flex;
+    gap: 8px;
+    padding-left: 6px;
+    border-left: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.73rem;
+    color: #67e8f9;
+  }
+
+  .conv-toggle-btn {
+    background: rgba(16, 185, 129, 0.14);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #6ee7b7;
+    padding: 6px 11px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.15s;
+  }
+
+  .conv-toggle-btn:hover {
+    background: rgba(16, 185, 129, 0.25);
+  }
+
+  /* Quick Unit Converter Drawer */
+  .converter-drawer {
+    max-width: 1340px;
+    margin: 8px auto 0;
+    background: var(--bg-card);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: none;
+  }
+
+  .converter-drawer.open {
+    display: block;
+    animation: fadeIn 0.18s ease;
+  }
+
+  .conv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+  }
+
+  .conv-box {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 7px 9px;
+  }
+
+  .conv-box-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #6ee7b7;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .conv-row {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .conv-row input, .conv-row select {
+    background: var(--bg-panel);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+  }
+
+  .conv-row input {
+    width: 78px;
+  }
+
+  .conv-out {
+    margin-top: 5px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.76rem;
+    color: #93c5fd;
+    font-weight: 600;
   }
 
   /* Main Navigation Tabs */
   nav.main-nav {
-    max-width: 1280px;
+    max-width: 1340px;
     width: 100%;
     margin: 10px auto 0;
     display: flex;
@@ -174,7 +275,7 @@
 
   /* Main Layout */
   main {
-    max-width: 1280px;
+    max-width: 1340px;
     width: 100%;
     margin: 0 auto;
     padding: 14px 16px 40px;
@@ -227,11 +328,11 @@
 
   .sub-view.active {
     display: grid;
-    grid-template-columns: 1.15fr 0.85fr;
+    grid-template-columns: 1.18fr 0.82fr;
     gap: 16px;
   }
 
-  @media (max-width: 920px) {
+  @media (max-width: 940px) {
     .sub-view.active {
       grid-template-columns: 1fr;
     }
@@ -339,7 +440,7 @@
   /* KPI Grid */
   .kpi-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
     gap: 8px;
   }
 
@@ -452,7 +553,7 @@
     padding: 4px 8px;
     border-radius: 5px;
     font-size: 0.78rem;
-    max-width: 65%;
+    max-width: 66%;
   }
 
   .formula-note {
@@ -466,14 +567,43 @@
     line-height: 1.5;
   }
 
+  /* Theory & Exam Note Box */
+  .theory-box {
+    background: rgba(22, 31, 51, 0.75);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.77rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .theory-box strong {
+    color: #93c5fd;
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.8rem;
+  }
+
+  .theory-box ul {
+    padding-left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .theory-box .warn-tip {
+    color: #fbbf24;
+  }
+
   /* Solver Section */
   .solver-layout {
     display: grid;
-    grid-template-columns: 340px 1fr;
+    grid-template-columns: 360px 1fr;
     gap: 16px;
   }
 
-  @media (max-width: 850px) {
+  @media (max-width: 880px) {
     .solver-layout {
       grid-template-columns: 1fr;
     }
@@ -507,6 +637,45 @@
     width: 100%;
   }
 
+  .si-banner {
+    background: rgba(6, 182, 212, 0.09);
+    border: 1px solid rgba(6, 182, 212, 0.32);
+    border-radius: 8px;
+    padding: 9px 12px;
+    margin-bottom: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: #67e8f9;
+    line-height: 1.5;
+  }
+
+  .diag-banner {
+    border-radius: 8px;
+    padding: 9px 12px;
+    margin-bottom: 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.45;
+  }
+
+  .diag-banner.ok {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #6ee7b7;
+  }
+
+  .diag-banner.warn {
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.45);
+    color: #fcd34d;
+  }
+
+  .diag-banner.danger {
+    background: rgba(244, 63, 94, 0.14);
+    border: 1px solid rgba(244, 63, 94, 0.5);
+    color: #fda4af;
+  }
+
   .step-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -516,7 +685,7 @@
   }
 
   .step-title {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 700;
     color: #93c5fd;
     margin-bottom: 4px;
@@ -524,9 +693,18 @@
 
   .step-formula {
     font-family: var(--font-mono);
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     color: var(--text-muted);
     margin-bottom: 4px;
+  }
+
+  .step-sub {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: #cbd5e1;
+    margin-bottom: 5px;
+    padding-left: 8px;
+    border-left: 2px solid #334155;
   }
 
   .step-res {
@@ -534,6 +712,87 @@
     font-size: 0.88rem;
     font-weight: 700;
     color: var(--emerald);
+  }
+
+  /* Formulario Ragionato (Tab 6) */
+  .form-search-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 14px;
+    align-items: center;
+  }
+
+  .form-search-bar input {
+    flex: 1;
+    min-width: 240px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    padding: 9px 13px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+  }
+
+  .form-search-bar input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .formula-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 14px;
+  }
+
+  .f-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .f-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+  }
+
+  .f-card-head h3 {
+    font-size: 0.9rem;
+    color: #93c5fd;
+  }
+
+  .f-eq {
+    background: var(--bg-input);
+    border: 1px solid #1e293b;
+    border-radius: 6px;
+    padding: 7px 9px;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: #f8fafc;
+  }
+
+  .f-eq span {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .f-pitfall {
+    background: rgba(245, 158, 11, 0.09);
+    border-left: 3px solid var(--amber);
+    padding: 6px 9px;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.74rem;
+    color: #fde68a;
   }
 </style>
 </head>
@@ -545,23 +804,94 @@
       <div class="brand-icon">M</div>
       <div class="brand-text">
         <h1>MacchineLab</h1>
-        <span>Simulatore &amp; Risolutore per Macchine a Fluido</span>
+        <span>Simulatore, Formulario &amp; Risolutore per Macchine a Fluido</span>
       </div>
     </div>
 
-    <div class="fluid-bar">
-      <label for="fluidPreset">Fluido:</label>
-      <select id="fluidPreset">
-        <option value="air">Aria (γ=1.40, R=287)</option>
-        <option value="n2">Azoto N₂ (γ=1.40, R=296.8)</option>
-        <option value="ch4">Metano CH₄ (γ=1.31, R=518.3)</option>
-        <option value="he">Elio He (γ=1.66, R=2077)</option>
-        <option value="custom">Gas Custom</option>
-      </select>
-      <label for="globalGamma">γ</label>
-      <input type="number" id="globalGamma" value="1.40" step="0.01" min="1.05" max="1.80">
-      <label for="globalR">R [J/kgK]</label>
-      <input type="number" id="globalR" value="287" step="1" min="50" max="4200">
+    <div class="header-tools">
+      <div class="fluid-bar">
+        <label for="fluidPreset">Fluido:</label>
+        <select id="fluidPreset">
+          <option value="air">Aria (γ=1.40, R=287)</option>
+          <option value="n2">Azoto N₂ (γ=1.40, R=296.8)</option>
+          <option value="ch4">Metano CH₄ (γ=1.31, R=518.3)</option>
+          <option value="he">Elio He (γ=1.66, R=2077)</option>
+          <option value="steam">Vapore surrisc. (γ=1.30, R=461.5)</option>
+          <option value="custom">Gas Custom</option>
+        </select>
+        <label for="globalGamma">γ</label>
+        <input type="number" id="globalGamma" value="1.40" step="0.01" min="1.05" max="1.80">
+        <label for="globalR">R [J/kgK]</label>
+        <input type="number" id="globalR" value="287" step="0.5" min="50" max="4200">
+        <div class="fluid-derived" id="fluidDerivedInfo">
+          <span>cₚ=1004.5</span>
+          <span>cᵥ=717.5</span>
+          <span>β_cr=1.893</span>
+        </div>
+      </div>
+
+      <button type="button" class="conv-toggle-btn" id="btnToggleConv">⇄ Convertitore SI</button>
+    </div>
+  </div>
+
+  <!-- Quick SI Unit Converter Drawer -->
+  <div class="converter-drawer" id="converterDrawer">
+    <div class="conv-grid">
+      <div class="conv-box">
+        <div class="conv-box-title">Pressione &amp; Prevalenza</div>
+        <div class="conv-row">
+          <input type="number" id="conv-p-val" value="1.5" step="any">
+          <select id="conv-p-unit">
+            <option value="bar">bar</option>
+            <option value="atm">atm</option>
+            <option value="kpa">kPa</option>
+            <option value="mmh2o">mmH₂O</option>
+            <option value="mca">m.c.a. (H₂O)</option>
+          </select>
+        </div>
+        <div class="conv-out" id="conv-p-out">150000 Pa | 15.29 m H₂O</div>
+      </div>
+
+      <div class="conv-box">
+        <div class="conv-box-title">Portata Volumetrica</div>
+        <div class="conv-row">
+          <input type="number" id="conv-q-val" value="120" step="any">
+          <select id="conv-q-unit">
+            <option value="m3h">m³/h</option>
+            <option value="ls">l/s (dm³/s)</option>
+            <option value="m3min">m³/min</option>
+            <option value="m3s">m³/s</option>
+          </select>
+        </div>
+        <div class="conv-out" id="conv-q-out">0.03333 m³/s | 33.33 l/s</div>
+      </div>
+
+      <div class="conv-box">
+        <div class="conv-box-title">Velocità Angolare</div>
+        <div class="conv-row">
+          <input type="number" id="conv-n-val" value="1450" step="any">
+          <select id="conv-n-unit">
+            <option value="rpm">rpm (giri/min)</option>
+            <option value="rads">rad/s</option>
+            <option value="hz">Hz (giri/s)</option>
+          </select>
+        </div>
+        <div class="conv-out" id="conv-n-out">ω = 151.84 rad/s | 24.17 Hz</div>
+      </div>
+
+      <div class="conv-box">
+        <div class="conv-box-title">Potenza &amp; Temperatura</div>
+        <div class="conv-row">
+          <input type="number" id="conv-w-val" value="50" step="any">
+          <select id="conv-w-unit">
+            <option value="kw">kW</option>
+            <option value="cv">CV (cavalli)</option>
+            <option value="c">°C → K</option>
+            <option value="k">K → °C</option>
+          </select>
+        </div>
+        <div class="conv-out" id="conv-w-out">50000 W | 67.98 CV</div>
+      </div>
     </div>
   </div>
 
@@ -570,7 +900,8 @@
     <button type="button" class="nav-btn" data-sec="sec2">2. Ugelli &amp; Motrici</button>
     <button type="button" class="nav-btn" data-sec="sec3">3. Turbomacchine Operatrici</button>
     <button type="button" class="nav-btn" data-sec="sec4">4. Cicli M.C.I.</button>
-    <button type="button" class="nav-btn" data-sec="sec5">5. Risolutore Esercizi</button>
+    <button type="button" class="nav-btn" data-sec="sec5">5. Risolutore Esercizi (10 Schemi)</button>
+    <button type="button" class="nav-btn" data-sec="sec6">6. Formulario Ragionato</button>
   </nav>
 </header>
 
@@ -598,6 +929,14 @@
         </div>
         <div class="kpi-grid" id="kpi-s1a"></div>
         <div class="formula-note" id="note-s1a"></div>
+        <div class="theory-box">
+          <strong>Spiegazione Teorica &amp; Note d&apos;Esame (Compressori Alternativi)</strong>
+          <ul>
+            <li><b>Rendimento volumetrico ηᵥ:</b> dipende solo dallo spazio morto μ = Vₙ/Vc e dall&apos;espansione 3→4 (esponente m&prime;), non dalla compressione 1→2. Quando β ≥ β_lim = (1/μ + 1)^m&prime;, ηᵥ = 0 (portata nulla).</li>
+            <li><b>Bistadio interrefrigerato:</b> la ripartizione ottima che minimizza il lavoro totale è β₁ = β₂ = √β (con interrefrigerazione perfetta T_int = T₁).</li>
+            <li class="warn-tip"><b>Attenzione allo scritto:</b> il lavoro sul compressore è negativo per convenzione termodinamica (L &lt; 0), ma la potenza assorbita P = ṁ·|L|/η_m è sempre positiva!</li>
+          </ul>
+        </div>
       </div>
 
       <div class="card">
@@ -659,6 +998,14 @@
         </div>
         <div class="kpi-grid" id="kpi-s1b"></div>
         <div class="formula-note" id="note-s1b"></div>
+        <div class="theory-box">
+          <strong>Spiegazione Teorica &amp; Note d&apos;Esame (Compressori Rotativi)</strong>
+          <ul>
+            <li><b>Roots (Lobi):</b> nessuna compressione interna (ρ = 1). Il gas viene trasportato a volume costante Vc fino alla luce di mandata dove rifluisce gas ad alta pressione p₂: il ciclo è un rettangolo di lavoro specifico L = (p₂ - p₁)/(ρ₁·ηᵥ).</li>
+            <li><b>Palette / Vite:</b> possiedono un rapporto volumetrico interno fisso ρ = V₁/Vᵢ → βᵢ = ρ^m. Se β ≠ βᵢ nasce una perdita triangolare di sotto- o sovra-compressione.</li>
+            <li class="warn-tip"><b>Errore tipico:</b> usare la formula politropica per un Roots. Per un Roots il lavoro ideale è isocoro-isobaro (rettangolare)!</li>
+          </ul>
+        </div>
       </div>
 
       <div class="card">
@@ -703,12 +1050,21 @@
         </div>
         <div class="canvas-wrap"><canvas id="cv-s1c"></canvas></div>
         <div class="legend-strip">
-          <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span>Curva Caratteristica Pompa H_p(Q)</div>
-          <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>Curva Resistente Impianto H_imp(Q)</div>
-          <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span>Punto di Funzionamento (Verde = OK, Rosso = Cavitazione)</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span>Curva Pompa H_p(Q)</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>Curva Impianto H_imp(Q)</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#06b6d4"></span>NPSH_disp(Q)</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#f43f5e"></span>NPSH_req(Q)</div>
         </div>
         <div class="kpi-grid" id="kpi-s1c"></div>
         <div class="formula-note" id="note-s1c"></div>
+        <div class="theory-box">
+          <strong>Spiegazione Teorica &amp; Note d&apos;Esame (Impianti di Pompaggio &amp; NPSH)</strong>
+          <ul>
+            <li><b>Punto di lavoro:</b> intersezione tra curva caratteristica interna H_p(Q) e caratteristica esterna dell&apos;impianto H_imp(Q) = ΔZ + (p_m - p_a)/(ρg) + k·Q².</li>
+            <li><b>Cavitazione:</b> si evita se NPSH_disp &gt; NPSH_req. Aumentare la temperatura T fa salire la tensione di vapore p_v(T), riducendo drammaticamente l&apos;NPSH disponibile!</li>
+            <li class="warn-tip"><b>Segno di Zₐ:</b> se la pompa è soprabattente (sopra il pelo libero), Zₐ &gt; 0 sottrae energia; se sottobattente, Zₐ &lt; 0 aumenta l&apos;NPSH_disp.</li>
+          </ul>
+        </div>
       </div>
 
       <div class="card">
@@ -765,6 +1121,13 @@
         </div>
         <div class="kpi-grid" id="kpi-s2a"></div>
         <div class="formula-note" id="note-s2a"></div>
+        <div class="theory-box">
+          <strong>Spiegazione Teorica &amp; Note d&apos;Esame (Ugelli &amp; Choking)</strong>
+          <ul>
+            <li><b>Equazione di Hugoniot:</b> dA/A = (M² - 1)·dc/c. Per accelerare oltre M = 1 occorre prima convergere (M &lt; 1) e poi divergere (M &gt; 1, ugello De Laval).</li>
+            <li><b>Blocco sonico (Choking):</b> in un ugello solo convergente, se p_amb ≤ p*, la sezione di uscita raggiunge M₂ = 1 e p₂ = p*: abbassare ulteriormente p_amb non aumenta né la portata massica né la velocità in gola!</li>
+          </ul>
+        </div>
       </div>
 
       <div class="card">
@@ -809,6 +1172,13 @@
         </div>
         <div class="kpi-grid" id="kpi-s2b"></div>
         <div class="formula-note" id="note-s2b"></div>
+        <div class="theory-box">
+          <strong>Spiegazione Teorica &amp; Note d&apos;Esame (Turbine Idrauliche)</strong>
+          <ul>
+            <li><b>Pelton (Azione, χ = 0):</b> tutta l&apos;energia di pressione è convertita in cinetica nella spina Doble (c₁ = φ_n·√(2gH)). Il rendimento idraulico è una parabola in u/c₁ con massimo teorico a u/c₁ = 0.50 (in pratica ~0.46–0.48).</li>
+            <li><b>Francis (Reazione, χ &gt; 0):</b> parte del salto H elabora in girante (p₁ &gt; p₂). Allo scarico si progetta c₂ᵤ = 0 per minimizzare l&apos;energia cinetica persa allo scarico.</li>
+          </ul>
+        </div>
       </div>
 
       <div class="card">
@@ -858,6 +1228,14 @@
         </div>
         <div class="kpi-grid" id="kpi-s2c"></div>
         <div class="formula-note" id="note-s2c"></div>
+        <div class="theory-box">
+          <strong>Spiegazione Teorica &amp; Note d&apos;Esame (Stadi di Turbina Assiale)</strong>
+          <ul>
+            <li><b>Azione (De Laval, χ = 0):</b> u/c₁_ott = cos(α₁)/2. Elevato salto entalpico per stadio, ma velocità periferiche molto alte.</li>
+            <li><b>Curtis (2 salti di velocità):</b> u/c₁_ott = cos(α₁)/4. Permette di smaltire salti entalpici 4 volte maggiori a parità di u, a scapito di un rendimento inferiore per maggiori attriti.</li>
+            <li><b>Reazione simmetrica (χ = 0.5):</b> u/c₁_ott = cos(α₁). Triangoli simmetrici (α₁ = β₂, β₁ = α₂) e rendimento massimo.</li>
+          </ul>
+        </div>
       </div>
 
       <div class="card">
@@ -914,6 +1292,14 @@
         </div>
         <div class="kpi-grid" id="kpi-s3a"></div>
         <div class="formula-note" id="note-s3a"></div>
+        <div class="theory-box">
+          <strong>Spiegazione Teorica &amp; Note d&apos;Esame (Centrifughe &amp; Fattore di Scorrimento)</strong>
+          <ul>
+            <li><b>Effetto numero pale finito (Z):</b> a causa del vortice relativo nel canale interpalare, il fluido esce con un angolo β₂ &lt; β₂b (scorrimento). Si modella col fattore di Stanitz-Stodola σ = 1 - 0.63·π/Z.</li>
+            <li><b>Inclinazione pale:</b> pale rivolte all&apos;indietro (β₂b &lt; 90°) garantiscono curva stabile (pendenza negativa) e maggior grado di reazione χ.</li>
+            <li class="warn-tip"><b>Pompaggio (Surge):</b> il tratto a sinistra del picco della curva reale (dH/dQ &gt; 0) è dinamicamente instabile!</li>
+          </ul>
+        </div>
       </div>
 
       <div class="card">
@@ -959,6 +1345,13 @@
         </div>
         <div class="kpi-grid" id="kpi-s3b"></div>
         <div class="formula-note" id="note-s3b"></div>
+        <div class="theory-box">
+          <strong>Spiegazione Teorica &amp; Note d&apos;Esame (Compressori Assiali)</strong>
+          <ul>
+            <li><b>Diffusione vs Accelerazione:</b> mentre nelle turbine il flusso accelera (gradiente di pressione favorevole), nei compressori il flusso decelera (w₂ &lt; w₁) contro un gradiente avverso.</li>
+            <li><b>Criterio di De Haller:</b> per evitare lo stallo aerodinamico della schiera rotorica si impone w₂ / w₁ ≥ 0.72. Ciò limita il salto di pressione per singolo stadio (β_stadio ≈ 1.15–1.35).</li>
+          </ul>
+        </div>
       </div>
 
       <div class="card">
@@ -1003,6 +1396,13 @@
         <div class="canvas-wrap"><canvas id="cv-s4a"></canvas></div>
         <div class="kpi-grid" id="kpi-s4a"></div>
         <div class="formula-note" id="note-s4a"></div>
+        <div class="theory-box">
+          <strong>Spiegazione Teorica &amp; Note d&apos;Esame (Confronto Cicli M.C.I.)</strong>
+          <ul>
+            <li><b>A parità di ρ e q₁:</b> η_Otto &gt; η_Sabathe &gt; η_Diesel perché l&apos;introduzione di calore a volume costante avviene alla temperatura media più alta (e quindi al minimo aumento di entropia).</li>
+            <li><b>Nella realtà costruttiva:</b> i motori Diesel/Sabathe non soffrono di detonazione e possono adottare ρ molto più alti (15–20 contro 9–11 degli Otto), superando così il rendimento reale dei motori ad accensione comandata.</li>
+          </ul>
+        </div>
       </div>
 
       <div class="card">
@@ -1047,96 +1447,162 @@
     </div>
   </section>
 
-  <!-- ==================== SEZIONE 5: RISOLUTORE ESERCIZI ==================== -->
+  <!-- ==================== SEZIONE 5: RISOLUTORE ESERCIZI (10 SCHEMI) ==================== -->
   <section id="sec5" class="section-view">
     <div class="solver-layout">
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Schema di Calcolo</span>
+          <span class="card-title">Seleziona Tipologia Problema</span>
         </div>
         <div class="toggle-row">
-          <span>Problema:</span>
+          <span>Esercizio:</span>
           <select id="solver-type">
-            <option value="alt1">1. Alternativo Monostadio (D, c, Vₙ, n)</option>
+            <option value="alt1">1. Alternativo Monostadio (D, c, μ, p₁, p₂, n, m)</option>
             <option value="alt_reg">2. Regolazione Portata con ΔVₙ</option>
-            <option value="alt2">3. Bistadio Interrefrigerato (p₁, p₂)</option>
-            <option value="roots">4. Compressore Rotativo Roots</option>
-            <option value="pump">5. Prevalenza &amp; Potenza Pompa</option>
-            <option value="turb">6. Grado di Reazione &amp; Lavoro Eulero</option>
+            <option value="alt2">3. Bistadio Interrefrigerato (p₁, p₂, Q)</option>
+            <option value="roots">4. Compressore Rotativo Roots / Palette</option>
+            <option value="pump">5. Pompa, Punto Impianto &amp; Verifica NPSH</option>
+            <option value="nozzle">6. Ugello Convergente &amp; Blocco Sonico</option>
+            <option value="pelton">7. Turbina Pelton (Getto, u/c₁, Potenza)</option>
+            <option value="axial">8. Stadio Assiale da Angoli (α₁, β₁, β₂, u, cₐ)</option>
+            <option value="mci">9. Ciclo M.C.I. (Otto/Diesel/Sabathe) &amp; Potenza</option>
+            <option value="simil">10. Similitudine Idraulica (Leggi di Affinità)</option>
           </select>
         </div>
         <div class="input-grid" id="solver-inputs"></div>
-        <div class="formula-note">I calcoli utilizzano γ e R selezionati nella barra superiore.</div>
+        <div class="formula-note">Tutti i calcoli convertono automaticamente in unità SI usando γ e R selezionati nella barra in alto.</div>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Svolgimento Analitico Passo-Passo</span>
-          <span class="badge">Risultati</span>
+          <span class="card-title">Svolgimento Analitico Completo Passo-Passo</span>
+          <span class="badge">Pronto per Esame</span>
         </div>
+        <div id="solver-si"></div>
+        <div id="solver-diag"></div>
         <div id="solver-steps"></div>
       </div>
     </div>
+  </section>
+
+  <!-- ==================== SEZIONE 6: FORMULARIO RAGIONATO ==================== -->
+  <section id="sec6" class="section-view">
+    <div class="form-search-bar">
+      <input type="text" id="formulaSearch" placeholder="Cerca formula, parametro o argomento (es. NPSH, Eulero, De Haller, spazio morto, Sabathe, μ, χ)...">
+      <span class="badge" id="formulaCountBadge">8 Moduli</span>
+    </div>
+    <div class="formula-grid" id="formulaGrid"></div>
   </section>
 </main>
 
 <script>
 // ==================== GLOBAL STATE & HELPERS ====================
 function getFluid() {
-  const gamma = parseFloat(document.getElementById('globalGamma').value) || 1.4;
-  const R = parseFloat(document.getElementById('globalR').value) || 287;
+  const gamma = parseFloat(document.getElementById("globalGamma").value) || 1.4;
+  const R = parseFloat(document.getElementById("globalR").value) || 287;
   const cp = (gamma * R) / (gamma - 1);
-  return { gamma, R, cp };
+  const cv = cp - R;
+  const betaCr = Math.pow((gamma + 1) / 2, gamma / (gamma - 1));
+  return { gamma, R, cp, cv, betaCr };
+}
+
+function updateFluidDerived() {
+  const fl = getFluid();
+  document.getElementById("fluidDerivedInfo").innerHTML =
+    `<span>cₚ=${fl.cp.toFixed(1)}</span><span>cᵥ=${fl.cv.toFixed(1)}</span><span>β_cr=${fl.betaCr.toFixed(3)}</span>`;
 }
 
 function onFluidChange() {
-  const preset = document.getElementById('fluidPreset').value;
-  const gIn = document.getElementById('globalGamma');
-  const rIn = document.getElementById('globalR');
-  if (preset === 'air') { gIn.value = 1.40; rIn.value = 287; }
-  else if (preset === 'n2') { gIn.value = 1.40; rIn.value = 296.8; }
-  else if (preset === 'ch4') { gIn.value = 1.31; rIn.value = 518.3; }
-  else if (preset === 'he') { gIn.value = 1.66; rIn.value = 2077; }
+  const preset = document.getElementById("fluidPreset").value;
+  const gIn = document.getElementById("globalGamma");
+  const rIn = document.getElementById("globalR");
+  if (preset === "air") { gIn.value = 1.40; rIn.value = 287; }
+  else if (preset === "n2") { gIn.value = 1.40; rIn.value = 296.8; }
+  else if (preset === "ch4") { gIn.value = 1.31; rIn.value = 518.3; }
+  else if (preset === "he") { gIn.value = 1.66; rIn.value = 2077; }
+  else if (preset === "steam") { gIn.value = 1.30; rIn.value = 461.5; }
   updateAll();
 }
 
+// ==================== UNIT CONVERTER DRAWER ====================
+function updateConverters() {
+  const pVal = parseFloat(document.getElementById("conv-p-val").value) || 0;
+  const pUnit = document.getElementById("conv-p-unit").value;
+  let pa = pVal;
+  if (pUnit === "bar") pa = pVal * 1e5;
+  else if (pUnit === "atm") pa = pVal * 101325;
+  else if (pUnit === "kpa") pa = pVal * 1e3;
+  else if (pUnit === "mmh2o") pa = pVal * 9.80665;
+  else if (pUnit === "mca") pa = pVal * 9806.65;
+  document.getElementById("conv-p-out").textContent = `${pa.toFixed(0)} Pa | ${(pa / 1e5).toFixed(4)} bar | ${(pa / 9806.65).toFixed(2)} m H₂O`;
+
+  const qVal = parseFloat(document.getElementById("conv-q-val").value) || 0;
+  const qUnit = document.getElementById("conv-q-unit").value;
+  let m3s = qVal;
+  if (qUnit === "m3h") m3s = qVal / 3600;
+  else if (qUnit === "ls") m3s = qVal / 1000;
+  else if (qUnit === "m3min") m3s = qVal / 60;
+  document.getElementById("conv-q-out").textContent = `${m3s.toFixed(5)} m³/s | ${(m3s * 1000).toFixed(2)} l/s | ${(m3s * 3600).toFixed(1)} m³/h`;
+
+  const nVal = parseFloat(document.getElementById("conv-n-val").value) || 0;
+  const nUnit = document.getElementById("conv-n-unit").value;
+  let rads = nVal;
+  if (nUnit === "rpm") rads = (nVal * 2 * Math.PI) / 60;
+  else if (nUnit === "hz") rads = nVal * 2 * Math.PI;
+  const rpm = (rads * 60) / (2 * Math.PI);
+  document.getElementById("conv-n-out").textContent = `ω = ${rads.toFixed(2)} rad/s | ${rpm.toFixed(1)} rpm | ${(rpm / 60).toFixed(2)} Hz`;
+
+  const wVal = parseFloat(document.getElementById("conv-w-val").value) || 0;
+  const wUnit = document.getElementById("conv-w-unit").value;
+  if (wUnit === "kw") {
+    document.getElementById("conv-w-out").textContent = `${(wVal * 1000).toFixed(0)} W | ${(wVal * 1.35962).toFixed(2)} CV`;
+  } else if (wUnit === "cv") {
+    document.getElementById("conv-w-out").textContent = `${(wVal * 0.7355).toFixed(2)} kW | ${(wVal * 735.5).toFixed(0)} W`;
+  } else if (wUnit === "c") {
+    document.getElementById("conv-w-out").textContent = `${(wVal + 273.15).toFixed(2)} K`;
+  } else {
+    document.getElementById("conv-w-out").textContent = `${(wVal - 273.15).toFixed(2)} °C`;
+  }
+}
+
+// ==================== NAVIGATION & CANVAS HELPERS ====================
 function switchSection(secId, btn) {
-  document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(secId).classList.add('active');
-  btn.classList.add('active');
+  document.querySelectorAll(".section-view").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById(secId).classList.add("active");
+  btn.classList.add("active");
   requestAnimationFrame(updateAll);
 }
 
 function switchSub(secId, subId, btn) {
   const sec = document.getElementById(secId);
-  sec.querySelectorAll('.sub-view').forEach(s => s.classList.remove('active'));
-  sec.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(subId).classList.add('active');
-  btn.classList.add('active');
+  sec.querySelectorAll(".sub-view").forEach(s => s.classList.remove("active"));
+  sec.querySelectorAll(".sub-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById(subId).classList.add("active");
+  btn.classList.add("active");
   requestAnimationFrame(updateAll);
 }
 
 function setupCanvas(id) {
   const cv = document.getElementById(id);
   const rect = cv.parentElement.getBoundingClientRect();
-  const w = rect.width || 600;
-  const h = rect.height || 320;
+  const w = rect.width || 620;
+  const h = rect.height || 330;
   const dpr = window.devicePixelRatio || 1;
   cv.width = Math.round(w * dpr);
   cv.height = Math.round(h * dpr);
-  const ctx = cv.getContext('2d');
+  const ctx = cv.getContext("2d");
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   return { ctx, w, h };
 }
 
 function drawAxes(ctx, w, h, pad, xLabel, yLabel, xMin, xMax, yMin, yMax) {
   ctx.clearRect(0, 0, w, h);
-  ctx.strokeStyle = '#1e293b';
+  ctx.strokeStyle = "#1e293b";
   ctx.lineWidth = 1;
   const gx = 5, gy = 5;
-  ctx.font = '10px monospace';
-  ctx.fillStyle = '#64748b';
+  ctx.font = "10px monospace";
+  ctx.fillStyle = "#64748b";
 
   for (let i = 0; i <= gx; i++) {
     const x = pad.l + (i / gx) * (w - pad.l - pad.r);
@@ -1157,7 +1623,7 @@ function drawAxes(ctx, w, h, pad, xLabel, yLabel, xMin, xMax, yMin, yMax) {
     ctx.fillText(val.toFixed(1), 6, y + 3);
   }
 
-  ctx.strokeStyle = '#475569';
+  ctx.strokeStyle = "#475569";
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.moveTo(pad.l, pad.t);
@@ -1165,9 +1631,9 @@ function drawAxes(ctx, w, h, pad, xLabel, yLabel, xMin, xMax, yMin, yMax) {
   ctx.lineTo(w - pad.r, h - pad.b);
   ctx.stroke();
 
-  ctx.fillStyle = '#94a3b8';
-  ctx.font = 'bold 11px sans-serif';
-  ctx.fillText(xLabel, w - pad.r - 52, h - 6);
+  ctx.fillStyle = "#94a3b8";
+  ctx.font = "bold 11px sans-serif";
+  ctx.fillText(xLabel, w - pad.r - 56, h - 6);
   ctx.fillText(yLabel, 8, pad.t - 6);
 
   return {
@@ -1178,47 +1644,47 @@ function drawAxes(ctx, w, h, pad, xLabel, yLabel, xMin, xMax, yMin, yMax) {
 
 function renderKPIs(id, items) {
   document.getElementById(id).innerHTML = items.map(it => `
-    <div class="kpi-box ${it.status || ''}">
+    <div class="kpi-box ${it.status || ""}">
       <div class="kpi-label">${it.label}</div>
-      <div class="kpi-val">${it.val}<span class="kpi-unit">${it.unit || ''}</span></div>
+      <div class="kpi-val">${it.val}<span class="kpi-unit">${it.unit || ""}</span></div>
     </div>
-  `).join('');
+  `).join("");
 }
 
 // ==================== 1A: COMPRESSORI ALTERNATIVI ====================
 function resetS1A() {
-  document.getElementById('s1a-stages').value = '1';
-  document.getElementById('s1a-real').checked = false;
-  document.getElementById('s1a-beta').value = 5.0;
-  document.getElementById('s1a-mu').value = 6.0;
-  document.getElementById('s1a-mc').value = 1.35;
-  document.getElementById('s1a-me').value = 1.35;
-  document.getElementById('s1a-vc').value = 1000;
-  document.getElementById('s1a-p1').value = 1.0;
+  document.getElementById("s1a-stages").value = "1";
+  document.getElementById("s1a-real").checked = false;
+  document.getElementById("s1a-beta").value = 5.0;
+  document.getElementById("s1a-mu").value = 6.0;
+  document.getElementById("s1a-mc").value = 1.35;
+  document.getElementById("s1a-me").value = 1.35;
+  document.getElementById("s1a-vc").value = 1000;
+  document.getElementById("s1a-p1").value = 1.0;
   updateS1A();
 }
 
 function updateS1A() {
   const { R } = getFluid();
-  const stages = parseInt(document.getElementById('s1a-stages').value, 10);
-  const isReal = document.getElementById('s1a-real').checked;
-  const beta = parseFloat(document.getElementById('s1a-beta').value);
-  const muPct = parseFloat(document.getElementById('s1a-mu').value);
+  const stages = parseInt(document.getElementById("s1a-stages").value, 10);
+  const isReal = document.getElementById("s1a-real").checked;
+  const beta = parseFloat(document.getElementById("s1a-beta").value);
+  const muPct = parseFloat(document.getElementById("s1a-mu").value);
   const mu = muPct / 100;
-  const mc = parseFloat(document.getElementById('s1a-mc').value);
-  const me = parseFloat(document.getElementById('s1a-me').value);
-  const vc_cm3 = parseFloat(document.getElementById('s1a-vc').value);
-  const p1 = parseFloat(document.getElementById('s1a-p1').value);
+  const mc = parseFloat(document.getElementById("s1a-mc").value);
+  const me = parseFloat(document.getElementById("s1a-me").value);
+  const vc_cm3 = parseFloat(document.getElementById("s1a-vc").value);
+  const p1 = parseFloat(document.getElementById("s1a-p1").value);
   const T1 = 293.15;
   const rpm = 1000;
 
-  document.getElementById('v-s1a-beta').textContent = beta.toFixed(1);
-  document.getElementById('v-s1a-mu').textContent = muPct.toFixed(1) + ' %';
-  document.getElementById('v-s1a-mc').textContent = mc.toFixed(2);
-  document.getElementById('v-s1a-me').textContent = me.toFixed(2);
-  document.getElementById('v-s1a-vc').textContent = `${vc_cm3} cm³ @ ${rpm} rpm`;
-  document.getElementById('v-s1a-p1').textContent = `${p1.toFixed(1)} bar | ${T1.toFixed(0)} K`;
-  document.getElementById('s1a-mode-badge').textContent = stages === 2 ? 'Bistadio Interref.' : 'Monostadio';
+  document.getElementById("v-s1a-beta").textContent = beta.toFixed(1);
+  document.getElementById("v-s1a-mu").textContent = muPct.toFixed(1) + " %";
+  document.getElementById("v-s1a-mc").textContent = mc.toFixed(2);
+  document.getElementById("v-s1a-me").textContent = me.toFixed(2);
+  document.getElementById("v-s1a-vc").textContent = `${vc_cm3} cm³ @ ${rpm} rpm`;
+  document.getElementById("v-s1a-p1").textContent = `${p1.toFixed(1)} bar | ${T1.toFixed(0)} K`;
+  document.getElementById("s1a-mode-badge").textContent = stages === 2 ? "Bistadio Interref." : "Monostadio";
 
   const betaStage = stages === 2 ? Math.sqrt(beta) : beta;
   const betaLim = mu > 0 ? Math.pow(1 / mu + 1, me) : 999;
@@ -1238,29 +1704,29 @@ function updateS1A() {
   const mDot = rho1 * Vc * etaV * (rpm / 60);
   const P_ind = mDot * L_tot;
 
-  renderKPIs('kpi-s1a', [
-    { label: 'Rend. Volumetrico ηᵥ', val: (etaV * 100).toFixed(1), unit: '%', status: etaV <= 0.05 ? 'danger' : (etaV < 0.5 ? 'warn' : 'ok') },
-    { label: 'β limite (ηᵥ = 0)', val: betaLim > 200 ? '>200' : betaLim.toFixed(2), unit: '' },
-    { label: 'Temp. Mandata T₂', val: T2.toFixed(1), unit: 'K', status: T2 > 480 ? 'warn' : '' },
-    { label: 'Lavoro Specifico |L|', val: L_tot.toFixed(1), unit: 'kJ/kg' },
-    { label: 'Portata Massica ṁ', val: (mDot * 1000).toFixed(1), unit: 'g/s' },
-    { label: stages === 2 ? 'Risparmio Bistadio' : 'Potenza Teorica', val: stages === 2 ? savingPct.toFixed(1) : P_ind.toFixed(2), unit: stages === 2 ? '%' : 'kW', status: stages === 2 ? 'ok' : '' }
+  renderKPIs("kpi-s1a", [
+    { label: "Rend. Volumetrico ηᵥ", val: (etaV * 100).toFixed(1), unit: "%", status: etaV <= 0.05 ? "danger" : (etaV < 0.5 ? "warn" : "ok") },
+    { label: "β limite (ηᵥ = 0)", val: betaLim > 200 ? ">200" : betaLim.toFixed(2), unit: "" },
+    { label: "Temp. Mandata T₂", val: T2.toFixed(1), unit: "K", status: T2 > 480 ? "warn" : "" },
+    { label: "Lavoro Specifico |L|", val: L_tot.toFixed(1), unit: "kJ/kg" },
+    { label: "Portata Massica ṁ", val: (mDot * 1000).toFixed(1), unit: "g/s" },
+    { label: stages === 2 ? "Risparmio Bistadio" : "Potenza Teorica", val: stages === 2 ? savingPct.toFixed(1) : P_ind.toFixed(2), unit: stages === 2 ? "%" : "kW", status: stages === 2 ? "ok" : "" }
   ]);
 
-  document.getElementById('note-s1a').innerHTML = stages === 1
-    ? `ηᵥ = 1 - μ·(β^(1/m') - 1) = ${(etaV * 100).toFixed(1)}% &nbsp;|&nbsp; L_th = - [m/(m-1)]·R·T₁·(β^((m-1)/m) - 1) = -${L_tot.toFixed(2)} kJ/kg`
+  document.getElementById("note-s1a").innerHTML = stages === 1
+    ? `ηᵥ = 1 - μ·(β^(1/m") - 1) = ${(etaV * 100).toFixed(1)}% &nbsp;|&nbsp; L_th = - [m/(m-1)]·R·T₁·(β^((m-1)/m) - 1) = -${L_tot.toFixed(2)} kJ/kg`
     : `p_int = p₁·√β = ${pInt.toFixed(2)} bar &nbsp;|&nbsp; L_bistadio = ${L_tot.toFixed(1)} kJ/kg vs L_monostadio = ${L_mono.toFixed(1)} kJ/kg (-${savingPct.toFixed(1)}%)`;
 
-  const { ctx, w, h } = setupCanvas('cv-s1a');
+  const { ctx, w, h } = setupCanvas("cv-s1a");
   const Vn = mu;
   const V1 = 1 + Vn;
   const V2 = V1 * Math.pow(1 / beta, 1 / mc);
   const V4 = Math.min(V1, Vn * Math.pow(betaStage, 1 / me));
 
-  const ax = drawAxes(ctx, w, h, { l: 44, r: 20, t: 22, b: 28 }, 'V / Vc', 'p [bar]', 0, 1.25, 0, p2 * 1.15);
+  const ax = drawAxes(ctx, w, h, { l: 44, r: 20, t: 22, b: 28 }, "V / Vc", "p [bar]", 0, 1.25, 0, p2 * 1.15);
 
   if (Vn > 0) {
-    ctx.fillStyle = 'rgba(148, 163, 184, 0.08)';
+    ctx.fillStyle = "rgba(148, 163, 184, 0.08)";
     ctx.fillRect(ax.toX(0), ax.toY(p2 * 1.15), ax.toX(Vn) - ax.toX(0), ax.toY(0) - ax.toY(p2 * 1.15));
   }
 
@@ -1285,9 +1751,9 @@ function updateS1A() {
     ctx.lineTo(ax.toX(Math.min(V1, v)), ax.toY(p));
   }
   ctx.closePath();
-  ctx.fillStyle = 'rgba(59, 130, 246, 0.18)';
+  ctx.fillStyle = "rgba(59, 130, 246, 0.18)";
   ctx.fill();
-  ctx.strokeStyle = '#3b82f6';
+  ctx.strokeStyle = "#3b82f6";
   ctx.lineWidth = 2.2;
   ctx.stroke();
 
@@ -1309,15 +1775,15 @@ function updateS1A() {
       ctx.lineTo(ax.toX(v), ax.toY(p));
     }
     ctx.closePath();
-    ctx.fillStyle = 'rgba(16, 185, 129, 0.30)';
+    ctx.fillStyle = "rgba(16, 185, 129, 0.30)";
     ctx.fill();
-    ctx.strokeStyle = '#10b981';
+    ctx.strokeStyle = "#10b981";
     ctx.lineWidth = 2;
     ctx.stroke();
   }
 
   if (isReal) {
-    ctx.strokeStyle = '#f43f5e';
+    ctx.strokeStyle = "#f43f5e";
     ctx.lineWidth = 1.5;
     ctx.setLineDash([4, 3]);
     ctx.beginPath();
@@ -1343,13 +1809,13 @@ function updateS1A() {
   }
 
   const pts = [
-    { lbl: '1', x: V1, y: p1 },
-    { lbl: '2', x: V2, y: p2 },
-    { lbl: '3', x: Vn, y: p2 },
-    { lbl: '4', x: V4, y: p1 }
+    { lbl: "1", x: V1, y: p1 },
+    { lbl: "2", x: V2, y: p2 },
+    { lbl: "3", x: Vn, y: p2 },
+    { lbl: "4", x: V4, y: p1 }
   ];
-  ctx.fillStyle = '#f8fafc';
-  ctx.font = 'bold 11px sans-serif';
+  ctx.fillStyle = "#f8fafc";
+  ctx.font = "bold 11px sans-serif";
   pts.forEach(pt => {
     ctx.beginPath();
     ctx.arc(ax.toX(pt.x), ax.toY(pt.y), 3.5, 0, Math.PI * 2);
@@ -1360,33 +1826,33 @@ function updateS1A() {
 
 // ==================== 1B: COMPRESSORI ROTATIVI ====================
 function resetS1B() {
-  document.getElementById('s1b-type').value = 'roots';
-  document.getElementById('s1b-beta').value = 1.8;
-  document.getElementById('s1b-rho').value = 1.6;
-  document.getElementById('s1b-m').value = 1.35;
-  document.getElementById('s1b-etav').value = 80;
+  document.getElementById("s1b-type").value = "roots";
+  document.getElementById("s1b-beta").value = 1.8;
+  document.getElementById("s1b-rho").value = 1.6;
+  document.getElementById("s1b-m").value = 1.35;
+  document.getElementById("s1b-etav").value = 80;
   updateS1B();
 }
 
 function updateS1B() {
   const { gamma, R } = getFluid();
-  const type = document.getElementById('s1b-type').value;
-  const beta = parseFloat(document.getElementById('s1b-beta').value);
-  const rho = parseFloat(document.getElementById('s1b-rho').value);
-  const m = parseFloat(document.getElementById('s1b-m').value);
-  const etav = parseFloat(document.getElementById('s1b-etav').value) / 100;
+  const type = document.getElementById("s1b-type").value;
+  const beta = parseFloat(document.getElementById("s1b-beta").value);
+  const rho = parseFloat(document.getElementById("s1b-rho").value);
+  const m = parseFloat(document.getElementById("s1b-m").value);
+  const etav = parseFloat(document.getElementById("s1b-etav").value) / 100;
 
-  document.getElementById('v-s1b-beta').textContent = beta.toFixed(2);
-  document.getElementById('v-s1b-rho').textContent = rho.toFixed(2);
-  document.getElementById('v-s1b-m').textContent = m.toFixed(2);
-  document.getElementById('v-s1b-etav').textContent = (etav * 100).toFixed(0) + ' %';
+  document.getElementById("v-s1b-beta").textContent = beta.toFixed(2);
+  document.getElementById("v-s1b-rho").textContent = rho.toFixed(2);
+  document.getElementById("v-s1b-m").textContent = m.toFixed(2);
+  document.getElementById("v-s1b-etav").textContent = (etav * 100).toFixed(0) + " %";
 
   const p1 = 1.0, T1 = 293.15;
   const p2 = p1 * beta;
   const L_is = (gamma / (gamma - 1)) * R * T1 * (Math.pow(beta, (gamma - 1) / gamma) - 1) / 1000;
 
-  let L_spec, eta_ad, regime = 'Compressione Esterna';
-  if (type === 'roots') {
+  let L_spec, eta_ad, regime = "Compressione Esterna";
+  if (type === "roots") {
     L_spec = (R * T1 * (beta - 1)) / (etav * 1000);
     eta_ad = (L_is / L_spec) * 100;
   } else {
@@ -1396,27 +1862,27 @@ function updateS1B() {
     const L_ext = (R * T1 / rho) * ((p2 - p_i) / p1) / 1000;
     L_spec = (L_int + L_ext) / etav;
     eta_ad = (L_is / L_spec) * 100;
-    if (Math.abs(beta - beta_i) < 0.05) regime = 'Adattato (β ≈ βᵢ)';
-    else if (beta > beta_i) regime = 'Sottocompressione (β > βᵢ)';
-    else regime = 'Sovracompressione (β < βᵢ)';
+    if (Math.abs(beta - beta_i) < 0.05) regime = "Adattato (β ≈ βᵢ)";
+    else if (beta > beta_i) regime = "Sottocompressione (β > βᵢ)";
+    else regime = "Sovracompressione (β < βᵢ)";
   }
 
-  document.getElementById('s1b-badge').textContent = regime;
-  renderKPIs('kpi-s1b', [
-    { label: 'Lavoro Specifico |L|', val: L_spec.toFixed(1), unit: 'kJ/kg' },
-    { label: 'Lavoro Isoentropico', val: L_is.toFixed(1), unit: 'kJ/kg' },
-    { label: 'Rend. Adiabatico η_ad', val: Math.min(99, eta_ad).toFixed(1), unit: '%', status: eta_ad < 60 ? 'warn' : 'ok' },
-    { label: 'β interno costruttivo', val: type === 'roots' ? '1.00' : Math.pow(rho, m).toFixed(2), unit: '' }
+  document.getElementById("s1b-badge").textContent = regime;
+  renderKPIs("kpi-s1b", [
+    { label: "Lavoro Specifico |L|", val: L_spec.toFixed(1), unit: "kJ/kg" },
+    { label: "Lavoro Isoentropico", val: L_is.toFixed(1), unit: "kJ/kg" },
+    { label: "Rend. Adiabatico η_ad", val: Math.min(99, eta_ad).toFixed(1), unit: "%", status: eta_ad < 60 ? "warn" : "ok" },
+    { label: "β interno costruttivo", val: type === "roots" ? "1.00" : Math.pow(rho, m).toFixed(2), unit: "" }
   ]);
 
-  document.getElementById('note-s1b').innerHTML = type === 'roots'
+  document.getElementById("note-s1b").innerHTML = type === "roots"
     ? `L_roots = Vc·(p₂ - p₁) / (ṁ · ηᵥ) = [R·T₁·(β - 1)] / ηᵥ = ${L_spec.toFixed(2)} kJ/kg (area rettangolare)`
     : `βᵢ = ρ^m = ${Math.pow(rho, m).toFixed(2)} &nbsp;|&nbsp; Perdita triangolare nulla solo quando β = βᵢ`;
 
-  const { ctx, w, h } = setupCanvas('cv-s1b');
-  const p_i = type === 'roots' ? p1 : p1 * Math.pow(rho, m);
+  const { ctx, w, h } = setupCanvas("cv-s1b");
+  const p_i = type === "roots" ? p1 : p1 * Math.pow(rho, m);
   const maxP = Math.max(p2, p_i) * 1.18;
-  const ax = drawAxes(ctx, w, h, { l: 44, r: 20, t: 22, b: 28 }, 'V / Vc', 'p [bar]', 0, 1.15, 0, maxP);
+  const ax = drawAxes(ctx, w, h, { l: 44, r: 20, t: 22, b: 28 }, "V / Vc", "p [bar]", 0, 1.15, 0, maxP);
 
   ctx.beginPath();
   ctx.moveTo(ax.toX(0), ax.toY(p1));
@@ -1428,9 +1894,9 @@ function updateS1B() {
   }
   ctx.lineTo(ax.toX(0), ax.toY(p2));
   ctx.closePath();
-  ctx.fillStyle = 'rgba(16, 185, 129, 0.14)';
+  ctx.fillStyle = "rgba(16, 185, 129, 0.14)";
   ctx.fill();
-  ctx.strokeStyle = '#10b981';
+  ctx.strokeStyle = "#10b981";
   ctx.setLineDash([4, 3]);
   ctx.stroke();
   ctx.setLineDash([]);
@@ -1438,7 +1904,7 @@ function updateS1B() {
   ctx.beginPath();
   ctx.moveTo(ax.toX(0), ax.toY(p1));
   ctx.lineTo(ax.toX(1), ax.toY(p1));
-  if (type === 'roots') {
+  if (type === "roots") {
     ctx.lineTo(ax.toX(1), ax.toY(p2));
     ctx.lineTo(ax.toX(0), ax.toY(p2));
   } else {
@@ -1452,35 +1918,35 @@ function updateS1B() {
     ctx.lineTo(ax.toX(0), ax.toY(p2));
   }
   ctx.closePath();
-  ctx.fillStyle = 'rgba(245, 158, 11, 0.22)';
+  ctx.fillStyle = "rgba(245, 158, 11, 0.22)";
   ctx.fill();
-  ctx.strokeStyle = '#f59e0b';
+  ctx.strokeStyle = "#f59e0b";
   ctx.lineWidth = 2.2;
   ctx.stroke();
 }
 
 // ==================== 1C: POMPE & NPSH ====================
 function resetS1C() {
-  document.getElementById('s1c-dz').value = 22;
-  document.getElementById('s1c-k').value = 1.8;
-  document.getElementById('s1c-za').value = 3.5;
-  document.getElementById('s1c-ya').value = 1.2;
-  document.getElementById('s1c-temp').value = 25;
+  document.getElementById("s1c-dz").value = 22;
+  document.getElementById("s1c-k").value = 1.8;
+  document.getElementById("s1c-za").value = 3.5;
+  document.getElementById("s1c-ya").value = 1.2;
+  document.getElementById("s1c-temp").value = 25;
   updateS1C();
 }
 
 function updateS1C() {
-  const dz = parseFloat(document.getElementById('s1c-dz').value);
-  const k = parseFloat(document.getElementById('s1c-k').value) * 1e4;
-  const za = parseFloat(document.getElementById('s1c-za').value);
-  const ya = parseFloat(document.getElementById('s1c-ya').value);
-  const temp = parseFloat(document.getElementById('s1c-temp').value);
+  const dz = parseFloat(document.getElementById("s1c-dz").value);
+  const k = parseFloat(document.getElementById("s1c-k").value) * 1e4;
+  const za = parseFloat(document.getElementById("s1c-za").value);
+  const ya = parseFloat(document.getElementById("s1c-ya").value);
+  const temp = parseFloat(document.getElementById("s1c-temp").value);
 
-  document.getElementById('v-s1c-dz').textContent = `${dz} m`;
-  document.getElementById('v-s1c-k').textContent = (k / 1e4).toFixed(1);
-  document.getElementById('v-s1c-za').textContent = `${za.toFixed(1)} m`;
-  document.getElementById('v-s1c-ya').textContent = `${ya.toFixed(1)} m`;
-  document.getElementById('v-s1c-temp').textContent = `${temp} °C`;
+  document.getElementById("v-s1c-dz").textContent = `${dz} m`;
+  document.getElementById("v-s1c-k").textContent = (k / 1e4).toFixed(1);
+  document.getElementById("v-s1c-za").textContent = `${za.toFixed(1)} m`;
+  document.getElementById("v-s1c-ya").textContent = `${ya.toFixed(1)} m`;
+  document.getElementById("v-s1c-temp").textContent = `${temp} °C`;
 
   const H0 = 65;
   const a_p = 2.2e4;
@@ -1497,20 +1963,20 @@ function updateS1C() {
   const eta_p = 0.78;
   const P_ass = (998 * 9.81 * Q_op * H_op) / (eta_p * 1000);
 
-  document.getElementById('s1c-badge').textContent = cavit ? 'CAVITAZIONE!' : 'Regime Sicuro';
-  renderKPIs('kpi-s1c', [
-    { label: 'Portata Esercizio Q', val: (Q_op * 3600).toFixed(1), unit: 'm³/h' },
-    { label: 'Prevalenza H_op', val: H_op.toFixed(1), unit: 'm' },
-    { label: 'NPSH disponibile', val: npsh_disp.toFixed(2), unit: 'm', status: cavit ? 'danger' : 'ok' },
-    { label: 'NPSH richiesto', val: npsh_req.toFixed(2), unit: 'm' },
-    { label: 'Potenza Assorbita', val: P_ass.toFixed(2), unit: 'kW' }
+  document.getElementById("s1c-badge").textContent = cavit ? "CAVITAZIONE!" : "Regime Sicuro";
+  renderKPIs("kpi-s1c", [
+    { label: "Portata Esercizio Q", val: (Q_op * 3600).toFixed(1), unit: "m³/h" },
+    { label: "Prevalenza H_op", val: H_op.toFixed(1), unit: "m" },
+    { label: "NPSH disponibile", val: npsh_disp.toFixed(2), unit: "m", status: cavit ? "danger" : "ok" },
+    { label: "NPSH richiesto", val: npsh_req.toFixed(2), unit: "m" },
+    { label: "Potenza Assorbita", val: P_ass.toFixed(2), unit: "kW" }
   ]);
 
-  document.getElementById('note-s1c').innerHTML = `NPSH_disp = (p_atm - p_v)/(ρg) - Zₐ - Yₐ = ${npsh_disp.toFixed(2)} m &nbsp;|&nbsp; Condizione anti-cavitazione: NPSH_disp > NPSH_req (${npsh_req.toFixed(2)} m)`;
+  document.getElementById("note-s1c").innerHTML = `NPSH_disp = (p_atm - p_v)/(ρg) - Zₐ - Yₐ = ${npsh_disp.toFixed(2)} m &nbsp;|&nbsp; Condizione anti-cavitazione: NPSH_disp > NPSH_req (${npsh_req.toFixed(2)} m)`;
 
-  const { ctx, w, h } = setupCanvas('cv-s1c');
+  const { ctx, w, h } = setupCanvas("cv-s1c");
   const qMax = 0.06;
-  const ax = drawAxes(ctx, w, h, { l: 44, r: 20, t: 22, b: 28 }, 'Q [l/s]', 'H [m]', 0, qMax * 1000, 0, 80);
+  const ax = drawAxes(ctx, w, h, { l: 44, r: 20, t: 22, b: 28 }, "Q [l/s]", "H / NPSH [m]", 0, qMax * 1000, 0, 80);
 
   ctx.beginPath();
   for (let i = 0; i <= 40; i++) {
@@ -1519,7 +1985,7 @@ function updateS1C() {
     if (i === 0) ctx.moveTo(ax.toX(q * 1000), ax.toY(hp));
     else ctx.lineTo(ax.toX(q * 1000), ax.toY(hp));
   }
-  ctx.strokeStyle = '#3b82f6';
+  ctx.strokeStyle = "#3b82f6";
   ctx.lineWidth = 2.4;
   ctx.stroke();
 
@@ -1531,12 +1997,33 @@ function updateS1C() {
     if (i === 0) ctx.moveTo(ax.toX(q * 1000), ax.toY(hi));
     else ctx.lineTo(ax.toX(q * 1000), ax.toY(hi));
   }
-  ctx.strokeStyle = '#f59e0b';
+  ctx.strokeStyle = "#f59e0b";
   ctx.lineWidth = 2.2;
   ctx.stroke();
 
+  // NPSH_disp horizontal line (multiplied x4 for visual readability on H axis)
+  const npshDispVis = Math.max(0, Math.min(75, npsh_disp * 4));
+  ctx.strokeStyle = "#06b6d4";
+  ctx.setLineDash([4, 3]);
+  ctx.beginPath();
+  ctx.moveTo(ax.toX(0), ax.toY(npshDispVis));
+  ctx.lineTo(ax.toX(qMax * 1000), ax.toY(npshDispVis));
+  ctx.stroke();
+
+  // NPSH_req curve (x4 scale)
+  ctx.beginPath();
+  for (let i = 0; i <= 40; i++) {
+    const q = (i / 40) * qMax;
+    const nr = Math.min(78, (1.8 + 850 * q * q) * 4);
+    if (i === 0) ctx.moveTo(ax.toX(q * 1000), ax.toY(nr));
+    else ctx.lineTo(ax.toX(q * 1000), ax.toY(nr));
+  }
+  ctx.strokeStyle = "#f43f5e";
+  ctx.stroke();
+  ctx.setLineDash([]);
+
   if (Q_op > 0) {
-    ctx.fillStyle = cavit ? '#f43f5e' : '#10b981';
+    ctx.fillStyle = cavit ? "#f43f5e" : "#10b981";
     ctx.beginPath();
     ctx.arc(ax.toX(Q_op * 1000), ax.toY(H_op), 5.5, 0, Math.PI * 2);
     ctx.fill();
@@ -1545,24 +2032,24 @@ function updateS1C() {
 
 // ==================== 2A: UGELLI ====================
 function resetS2A() {
-  document.getElementById('s2a-p0').value = 5.0;
-  document.getElementById('s2a-t0').value = 600;
-  document.getElementById('s2a-pamb').value = 2.2;
-  document.getElementById('s2a-eta').value = 0.96;
+  document.getElementById("s2a-p0").value = 5.0;
+  document.getElementById("s2a-t0").value = 600;
+  document.getElementById("s2a-pamb").value = 2.2;
+  document.getElementById("s2a-eta").value = 0.96;
   updateS2A();
 }
 
 function updateS2A() {
   const { gamma, R, cp } = getFluid();
-  const p0 = parseFloat(document.getElementById('s2a-p0').value);
-  const T0 = parseFloat(document.getElementById('s2a-t0').value);
-  const pAmb = parseFloat(document.getElementById('s2a-pamb').value);
-  const phi2 = parseFloat(document.getElementById('s2a-eta').value);
+  const p0 = parseFloat(document.getElementById("s2a-p0").value);
+  const T0 = parseFloat(document.getElementById("s2a-t0").value);
+  const pAmb = parseFloat(document.getElementById("s2a-pamb").value);
+  const phi2 = parseFloat(document.getElementById("s2a-eta").value);
 
-  document.getElementById('v-s2a-p0').textContent = `${p0.toFixed(1)} bar`;
-  document.getElementById('v-s2a-t0').textContent = `${T0} K`;
-  document.getElementById('v-s2a-pamb').textContent = `${pAmb.toFixed(1)} bar`;
-  document.getElementById('v-s2a-eta').textContent = phi2.toFixed(2);
+  document.getElementById("v-s2a-p0").textContent = `${p0.toFixed(1)} bar`;
+  document.getElementById("v-s2a-t0").textContent = `${T0} K`;
+  document.getElementById("v-s2a-pamb").textContent = `${pAmb.toFixed(1)} bar`;
+  document.getElementById("v-s2a-eta").textContent = phi2.toFixed(2);
 
   const betaCr = Math.pow((gamma + 1) / 2, gamma / (gamma - 1));
   const pCr = p0 / betaCr;
@@ -1576,19 +2063,19 @@ function updateS2A() {
   const a2 = Math.sqrt(gamma * R * T2);
   const M2 = c2 / a2;
 
-  document.getElementById('s2a-badge').textContent = choked ? 'BLOCCO SONICO (M=1)' : 'Subsonico';
-  renderKPIs('kpi-s2a', [
-    { label: 'Pressione Critica p*', val: pCr.toFixed(2), unit: 'bar' },
-    { label: 'Pressione Sezione Uscita', val: pOut.toFixed(2), unit: 'bar', status: choked ? 'warn' : '' },
-    { label: 'Velocità Efflusso c₂', val: c2.toFixed(1), unit: 'm/s' },
-    { label: 'Numero di Mach M₂', val: M2.toFixed(2), unit: '', status: choked ? 'warn' : 'ok' },
-    { label: 'Temperatura Uscita T₂', val: T2.toFixed(1), unit: 'K' }
+  document.getElementById("s2a-badge").textContent = choked ? "BLOCCO SONICO (M=1)" : "Subsonico";
+  renderKPIs("kpi-s2a", [
+    { label: "Pressione Critica p*", val: pCr.toFixed(2), unit: "bar" },
+    { label: "Pressione Sezione Uscita", val: pOut.toFixed(2), unit: "bar", status: choked ? "warn" : "" },
+    { label: "Velocità Efflusso c₂", val: c2.toFixed(1), unit: "m/s" },
+    { label: "Numero di Mach M₂", val: M2.toFixed(2), unit: "", status: choked ? "warn" : "ok" },
+    { label: "Temperatura Uscita T₂", val: T2.toFixed(1), unit: "K" }
   ]);
 
-  document.getElementById('note-s2a').innerHTML = `β_cr = [(γ+1)/2]^(γ/(γ-1)) = ${betaCr.toFixed(3)} &nbsp;|&nbsp; ${choked ? 'Ugello saturato: p_uscita = p* > p_amb (espansione esterna)' : 'Ugello adattato: p_uscita = p_amb'}`;
+  document.getElementById("note-s2a").innerHTML = `β_cr = [(γ+1)/2]^(γ/(γ-1)) = ${betaCr.toFixed(3)} &nbsp;|&nbsp; ${choked ? "Ugello saturato: p_uscita = p* > p_amb (espansione esterna)" : "Ugello adattato: p_uscita = p_amb"}`;
 
-  const { ctx, w, h } = setupCanvas('cv-s2a');
-  const ax = drawAxes(ctx, w, h, { l: 44, r: 24, t: 22, b: 28 }, 'x / L', 'p/p₀ & M', 0, 1.0, 0, 1.15);
+  const { ctx, w, h } = setupCanvas("cv-s2a");
+  const ax = drawAxes(ctx, w, h, { l: 44, r: 24, t: 22, b: 28 }, "x / L", "p/p₀ & M", 0, 1.0, 0, 1.15);
 
   ctx.beginPath();
   for (let i = 0; i <= 40; i++) {
@@ -1598,7 +2085,7 @@ function updateS2A() {
     if (i === 0) ctx.moveTo(ax.toX(f), ax.toY(ratio));
     else ctx.lineTo(ax.toX(f), ax.toY(ratio));
   }
-  ctx.strokeStyle = '#3b82f6';
+  ctx.strokeStyle = "#3b82f6";
   ctx.lineWidth = 2.4;
   ctx.stroke();
 
@@ -1610,11 +2097,11 @@ function updateS2A() {
     if (i === 0) ctx.moveTo(ax.toX(f), ax.toY(m_loc));
     else ctx.lineTo(ax.toX(f), ax.toY(m_loc));
   }
-  ctx.strokeStyle = '#10b981';
+  ctx.strokeStyle = "#10b981";
   ctx.lineWidth = 2.2;
   ctx.stroke();
 
-  ctx.strokeStyle = '#f43f5e';
+  ctx.strokeStyle = "#f43f5e";
   ctx.setLineDash([4, 3]);
   ctx.beginPath();
   ctx.moveTo(ax.toX(0), ax.toY(1 / betaCr));
@@ -1625,35 +2112,35 @@ function updateS2A() {
 
 // ==================== 2B: TURBINE IDRAULICHE ====================
 function resetS2B() {
-  document.getElementById('s2b-type').value = 'pelton';
-  document.getElementById('s2b-h').value = 180;
-  document.getElementById('s2b-uc').value = 0.48;
-  document.getElementById('s2b-b2').value = 165;
-  document.getElementById('s2b-psi').value = 0.92;
+  document.getElementById("s2b-type").value = "pelton";
+  document.getElementById("s2b-h").value = 180;
+  document.getElementById("s2b-uc").value = 0.48;
+  document.getElementById("s2b-b2").value = 165;
+  document.getElementById("s2b-psi").value = 0.92;
   updateS2B();
 }
 
 function updateS2B() {
-  const type = document.getElementById('s2b-type').value;
-  const H = parseFloat(document.getElementById('s2b-h').value);
-  const uc = parseFloat(document.getElementById('s2b-uc').value);
-  const b2_deg = parseFloat(document.getElementById('s2b-b2').value);
-  const psi = parseFloat(document.getElementById('s2b-psi').value);
+  const type = document.getElementById("s2b-type").value;
+  const H = parseFloat(document.getElementById("s2b-h").value);
+  const uc = parseFloat(document.getElementById("s2b-uc").value);
+  const b2_deg = parseFloat(document.getElementById("s2b-b2").value);
+  const psi = parseFloat(document.getElementById("s2b-psi").value);
 
-  document.getElementById('v-s2b-h').textContent = `${H} m`;
-  document.getElementById('v-s2b-uc').textContent = uc.toFixed(2);
-  document.getElementById('v-s2b-b2').textContent = `${b2_deg} °`;
-  document.getElementById('v-s2b-psi').textContent = psi.toFixed(2);
-  document.getElementById('s2b-badge').textContent = type === 'pelton' ? 'Pelton (χ=0)' : 'Francis (χ>0)';
+  document.getElementById("v-s2b-h").textContent = `${H} m`;
+  document.getElementById("v-s2b-uc").textContent = uc.toFixed(2);
+  document.getElementById("v-s2b-b2").textContent = `${b2_deg} °`;
+  document.getElementById("v-s2b-psi").textContent = psi.toFixed(2);
+  document.getElementById("s2b-badge").textContent = type === "pelton" ? "Pelton (χ=0)" : "Francis (χ>0)";
 
   const g = 9.81;
-  const phi_n = type === 'pelton' ? 0.98 : 0.72;
+  const phi_n = type === "pelton" ? 0.98 : 0.72;
   const c1 = phi_n * Math.sqrt(2 * g * H);
   const u1 = uc * c1;
   const b2 = (b2_deg * Math.PI) / 180;
 
   let L_eul, eta_id;
-  if (type === 'pelton') {
+  if (type === "pelton") {
     L_eul = u1 * (c1 - u1) * (1 - psi * Math.cos(b2));
     eta_id = L_eul / (g * H);
   } else {
@@ -1663,18 +2150,18 @@ function updateS2B() {
     eta_id = Math.min(0.95, L_eul / (g * H));
   }
 
-  renderKPIs('kpi-s2b', [
-    { label: 'Velocità Assoluta c₁', val: c1.toFixed(1), unit: 'm/s' },
-    { label: 'Velocità Periferica u₁', val: u1.toFixed(1), unit: 'm/s' },
-    { label: 'Lavoro Euleriano L', val: L_eul.toFixed(0), unit: 'J/kg' },
-    { label: 'Rendimento Idraulico η_id', val: (eta_id * 100).toFixed(1), unit: '%', status: eta_id > 0.85 ? 'ok' : 'warn' }
+  renderKPIs("kpi-s2b", [
+    { label: "Velocità Assoluta c₁", val: c1.toFixed(1), unit: "m/s" },
+    { label: "Velocità Periferica u₁", val: u1.toFixed(1), unit: "m/s" },
+    { label: "Lavoro Euleriano L", val: L_eul.toFixed(0), unit: "J/kg" },
+    { label: "Rendimento Idraulico η_id", val: (eta_id * 100).toFixed(1), unit: "%", status: eta_id > 0.85 ? "ok" : "warn" }
   ]);
 
-  document.getElementById('note-s2b').innerHTML = type === 'pelton'
+  document.getElementById("note-s2b").innerHTML = type === "pelton"
     ? `L = u·(c₁ - u)·(1 - ψ·cosβ₂) &nbsp;|&nbsp; Ottimo teorico per u/c₁ = 0.50`
     : `L = u₁·c₁ᵤ - u₂·c₂ᵤ &nbsp;|&nbsp; Scarico ortogonale ottimo per c₂ᵤ ≈ 0`;
 
-  const { ctx, w, h } = setupCanvas('cv-s2b');
+  const { ctx, w, h } = setupCanvas("cv-s2b");
   ctx.clearRect(0, 0, w, h);
   const scale = (w * 0.65) / Math.max(c1, 10);
   const ox = w * 0.18;
@@ -1691,53 +2178,53 @@ function updateS2B() {
     ctx.lineTo(x1 - 8 * Math.cos(ang - 0.35), y1 - 8 * Math.sin(ang - 0.35));
     ctx.lineTo(x1 - 8 * Math.cos(ang + 0.35), y1 - 8 * Math.sin(ang + 0.35));
     ctx.closePath(); ctx.fill();
-    ctx.font = 'bold 11px monospace';
+    ctx.font = "bold 11px monospace";
     ctx.fillText(label, (x0 + x1) / 2 - 10, (y0 + y1) / 2 - 7);
   }
 
-  ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 11px sans-serif';
-  ctx.fillText('TRIANGOLO INGRESSO (1)', ox, oy1 - 24);
-  drawVec(ox, oy1, c1 * scale, 0, '#3b82f6', 'c₁');
-  drawVec(ox, oy1 + 12, u1 * scale, 0, '#f59e0b', 'u₁');
-  drawVec(ox + u1 * scale, oy1 + 12, (c1 - u1) * scale, 0, '#10b981', 'w₁');
+  ctx.fillStyle = "#94a3b8"; ctx.font = "bold 11px sans-serif";
+  ctx.fillText("TRIANGOLO INGRESSO (1)", ox, oy1 - 24);
+  drawVec(ox, oy1, c1 * scale, 0, "#3b82f6", "c₁");
+  drawVec(ox, oy1 + 12, u1 * scale, 0, "#f59e0b", "u₁");
+  drawVec(ox + u1 * scale, oy1 + 12, (c1 - u1) * scale, 0, "#10b981", "w₁");
 
-  ctx.fillStyle = '#94a3b8';
-  ctx.fillText('TRIANGOLO USCITA (2)', ox, oy2 - 36);
+  ctx.fillStyle = "#94a3b8";
+  ctx.fillText("TRIANGOLO USCITA (2)", ox, oy2 - 36);
   const w2 = psi * Math.max(0, c1 - u1);
   const w2x = w2 * Math.cos(b2) * scale;
   const w2y = -w2 * Math.sin(b2) * scale;
-  drawVec(ox, oy2, u1 * scale, 0, '#f59e0b', 'u₂');
-  drawVec(ox + u1 * scale, oy2, w2x, w2y, '#10b981', 'w₂');
-  drawVec(ox, oy2, u1 * scale + w2x, w2y, '#06b6d4', 'c₂');
+  drawVec(ox, oy2, u1 * scale, 0, "#f59e0b", "u₂");
+  drawVec(ox + u1 * scale, oy2, w2x, w2y, "#10b981", "w₂");
+  drawVec(ox, oy2, u1 * scale + w2x, w2y, "#06b6d4", "c₂");
 }
 
 // ==================== 2C: TURBINE GAS / VAPORE ====================
 function resetS2C() {
-  document.getElementById('s2c-type').value = 'action';
-  document.getElementById('s2c-a1').value = 20;
-  document.getElementById('s2c-uc').value = 0.47;
-  document.getElementById('s2c-dh').value = 220;
+  document.getElementById("s2c-type").value = "action";
+  document.getElementById("s2c-a1").value = 20;
+  document.getElementById("s2c-uc").value = 0.47;
+  document.getElementById("s2c-dh").value = 220;
   updateS2C();
 }
 
 function updateS2C() {
-  const type = document.getElementById('s2c-type').value;
-  const a1_deg = parseFloat(document.getElementById('s2c-a1').value);
-  const uc = parseFloat(document.getElementById('s2c-uc').value);
-  const dh_is = parseFloat(document.getElementById('s2c-dh').value);
+  const type = document.getElementById("s2c-type").value;
+  const a1_deg = parseFloat(document.getElementById("s2c-a1").value);
+  const uc = parseFloat(document.getElementById("s2c-uc").value);
+  const dh_is = parseFloat(document.getElementById("s2c-dh").value);
 
-  document.getElementById('v-s2c-a1').textContent = `${a1_deg} °`;
-  document.getElementById('v-s2c-uc').textContent = uc.toFixed(2);
-  document.getElementById('v-s2c-dh').textContent = `${dh_is} kJ/kg`;
+  document.getElementById("v-s2c-a1").textContent = `${a1_deg} °`;
+  document.getElementById("v-s2c-uc").textContent = uc.toFixed(2);
+  document.getElementById("v-s2c-dh").textContent = `${dh_is} kJ/kg`;
 
   const a1 = (a1_deg * Math.PI) / 180;
   const cosa = Math.cos(a1);
   let eta_p, chi;
 
-  if (type === 'action') {
+  if (type === "action") {
     chi = 0;
     eta_p = Math.max(0, 4 * uc * (cosa - uc) * 0.92);
-  } else if (type === 'curtis') {
+  } else if (type === "curtis") {
     chi = 0;
     eta_p = Math.max(0, 8 * uc * (cosa - 2 * uc) * 0.84);
   } else {
@@ -1748,20 +2235,20 @@ function updateS2C() {
   const L_reale = dh_is * eta_p;
   const c1 = Math.sqrt(2 * dh_is * 1000 * (1 - chi));
 
-  document.getElementById('s2c-badge').textContent = `χ = ${chi.toFixed(1)}`;
-  renderKPIs('kpi-s2c', [
-    { label: 'Rendimento Palettatura η_p', val: (eta_p * 100).toFixed(1), unit: '%', status: eta_p > 0.78 ? 'ok' : 'warn' },
-    { label: 'Lavoro Reale Stadio', val: L_reale.toFixed(1), unit: 'kJ/kg' },
-    { label: 'Velocità Uscita Ugello c₁', val: c1.toFixed(0), unit: 'm/s' },
-    { label: 'u/c₁ Ottimo Teorico', val: type === 'action' ? (cosa / 2).toFixed(2) : (type === 'curtis' ? (cosa / 4).toFixed(2) : cosa.toFixed(2)), unit: '' }
+  document.getElementById("s2c-badge").textContent = `χ = ${chi.toFixed(1)}`;
+  renderKPIs("kpi-s2c", [
+    { label: "Rendimento Palettatura η_p", val: (eta_p * 100).toFixed(1), unit: "%", status: eta_p > 0.78 ? "ok" : "warn" },
+    { label: "Lavoro Reale Stadio", val: L_reale.toFixed(1), unit: "kJ/kg" },
+    { label: "Velocità Uscita Ugello c₁", val: c1.toFixed(0), unit: "m/s" },
+    { label: "u/c₁ Ottimo Teorico", val: type === "action" ? (cosa / 2).toFixed(2) : (type === "curtis" ? (cosa / 4).toFixed(2) : cosa.toFixed(2)), unit: "" }
   ]);
 
-  document.getElementById('note-s2c').innerHTML = `Piano (h, s): espansione reale 0 → 2 con aumento di entropia Δs > 0 &nbsp;|&nbsp; η_p = Δh_reale / Δh_is`;
+  document.getElementById("note-s2c").innerHTML = `Piano (h, s): espansione reale 0 → 2 con aumento di entropia Δs > 0 &nbsp;|&nbsp; η_p = Δh_reale / Δh_is`;
 
-  const { ctx, w, h } = setupCanvas('cv-s2c');
-  const ax = drawAxes(ctx, w, h, { l: 44, r: 20, t: 22, b: 28 }, 'Entropia s', 'Entalpia h', 0, 1.0, 0, 1.0);
+  const { ctx, w, h } = setupCanvas("cv-s2c");
+  const ax = drawAxes(ctx, w, h, { l: 44, r: 20, t: 22, b: 28 }, "Entropia s", "Entalpia h", 0, 1.0, 0, 1.0);
 
-  ctx.strokeStyle = '#475569';
+  ctx.strokeStyle = "#475569";
   ctx.lineWidth = 1.4;
   ctx.beginPath();
   for (let i = 0; i <= 30; i++) {
@@ -1783,7 +2270,7 @@ function updateS2C() {
 
   const s0 = 0.28, h0 = 0.72 + 0.22 * s0 * s0;
   const h2is = 0.18 + 0.22 * s0 * s0;
-  ctx.strokeStyle = '#10b981';
+  ctx.strokeStyle = "#10b981";
   ctx.setLineDash([4, 3]);
   ctx.beginPath();
   ctx.moveTo(ax.toX(s0), ax.toY(h0));
@@ -1793,7 +2280,7 @@ function updateS2C() {
 
   const s2 = s0 + (1 - eta_p) * 0.45;
   const h2 = 0.18 + 0.22 * s2 * s2;
-  ctx.strokeStyle = '#f59e0b';
+  ctx.strokeStyle = "#f59e0b";
   ctx.lineWidth = 2.4;
   ctx.beginPath();
   ctx.moveTo(ax.toX(s0), ax.toY(h0));
@@ -1803,24 +2290,24 @@ function updateS2C() {
 
 // ==================== 3A: CENTRIFUGHE ====================
 function resetS3A() {
-  document.getElementById('s3a-b2').value = 30;
-  document.getElementById('s3a-z').value = 12;
-  document.getElementById('s3a-u2').value = 180;
-  document.getElementById('s3a-phi').value = 0.28;
+  document.getElementById("s3a-b2").value = 30;
+  document.getElementById("s3a-z").value = 12;
+  document.getElementById("s3a-u2").value = 180;
+  document.getElementById("s3a-phi").value = 0.28;
   updateS3A();
 }
 
 function updateS3A() {
   const { cp } = getFluid();
-  const b2_deg = parseFloat(document.getElementById('s3a-b2').value);
-  const z = parseFloat(document.getElementById('s3a-z').value);
-  const u2 = parseFloat(document.getElementById('s3a-u2').value);
-  const phi2 = parseFloat(document.getElementById('s3a-phi').value);
+  const b2_deg = parseFloat(document.getElementById("s3a-b2").value);
+  const z = parseFloat(document.getElementById("s3a-z").value);
+  const u2 = parseFloat(document.getElementById("s3a-u2").value);
+  const phi2 = parseFloat(document.getElementById("s3a-phi").value);
 
-  document.getElementById('v-s3a-b2').textContent = `${b2_deg} °`;
-  document.getElementById('v-s3a-z').textContent = z;
-  document.getElementById('v-s3a-u2').textContent = `${u2} m/s`;
-  document.getElementById('v-s3a-phi').textContent = phi2.toFixed(2);
+  document.getElementById("v-s3a-b2").textContent = `${b2_deg} °`;
+  document.getElementById("v-s3a-z").textContent = z;
+  document.getElementById("v-s3a-u2").textContent = `${u2} m/s`;
+  document.getElementById("v-s3a-phi").textContent = phi2.toFixed(2);
 
   const b2 = (b2_deg * Math.PI) / 180;
   const sigma = Math.max(0.65, 1 - (0.63 * Math.PI) / z);
@@ -1829,22 +2316,22 @@ function updateS3A() {
   const L_utile = Math.max(0, L_eu * eta_hyd);
   const beta_c = Math.pow(1 + L_utile / (cp * 293.15), 1.4 / 0.4);
 
-  const bladeType = b2_deg < 85 ? 'Pale Indietro' : (b2_deg <= 95 ? 'Pale Radiali' : 'Pale Avanti');
-  document.getElementById('s3a-badge').textContent = bladeType;
+  const bladeType = b2_deg < 85 ? "Pale Indietro" : (b2_deg <= 95 ? "Pale Radiali" : "Pale Avanti");
+  document.getElementById("s3a-badge").textContent = bladeType;
 
-  renderKPIs('kpi-s3a', [
-    { label: 'Fattore Scorrimento σ', val: sigma.toFixed(3), unit: '' },
-    { label: 'Lavoro Euleriano (Z fin.)', val: (L_eu / 1000).toFixed(1), unit: 'kJ/kg' },
-    { label: 'Rapp. Compressione β (Aria)', val: beta_c.toFixed(2), unit: '' },
-    { label: 'Stabilità Curva H-Q', val: b2_deg < 85 ? 'Stabile' : 'Rischio Surge', unit: '', status: b2_deg < 85 ? 'ok' : 'warn' }
+  renderKPIs("kpi-s3a", [
+    { label: "Fattore Scorrimento σ", val: sigma.toFixed(3), unit: "" },
+    { label: "Lavoro Euleriano (Z fin.)", val: (L_eu / 1000).toFixed(1), unit: "kJ/kg" },
+    { label: "Rapp. Compressione β (Aria)", val: beta_c.toFixed(2), unit: "" },
+    { label: "Stabilità Curva H-Q", val: b2_deg < 85 ? "Stabile" : "Rischio Surge", unit: "", status: b2_deg < 85 ? "ok" : "warn" }
   ]);
 
-  document.getElementById('note-s3a').innerHTML = `L_eu = u₂² · (σ - φ₂ / tan β₂b) &nbsp;|&nbsp; Per β₂b < 90° la curva teorica è decrescente con Q`;
+  document.getElementById("note-s3a").innerHTML = `L_eu = u₂² · (σ - φ₂ / tan β₂b) &nbsp;|&nbsp; Per β₂b < 90° la curva teorica è decrescente con Q`;
 
-  const { ctx, w, h } = setupCanvas('cv-s3a');
-  const ax = drawAxes(ctx, w, h, { l: 44, r: 20, t: 22, b: 28 }, 'φ₂ = c₂ₘ/u₂', 'ψ = L/u₂²', 0, 0.65, 0, 1.5);
+  const { ctx, w, h } = setupCanvas("cv-s3a");
+  const ax = drawAxes(ctx, w, h, { l: 44, r: 20, t: 22, b: 28 }, "φ₂ = c₂ₘ/u₂", "ψ = L/u₂²", 0, 0.65, 0, 1.5);
 
-  ctx.fillStyle = 'rgba(244, 63, 94, 0.12)';
+  ctx.fillStyle = "rgba(244, 63, 94, 0.12)";
   ctx.fillRect(ax.toX(0), ax.toY(1.5), ax.toX(0.14) - ax.toX(0), ax.toY(0) - ax.toY(1.5));
 
   ctx.beginPath();
@@ -1854,7 +2341,7 @@ function updateS3A() {
     if (i === 0) ctx.moveTo(ax.toX(p), ax.toY(psi_inf));
     else ctx.lineTo(ax.toX(p), ax.toY(psi_inf));
   }
-  ctx.strokeStyle = '#64748b';
+  ctx.strokeStyle = "#64748b";
   ctx.setLineDash([4, 3]);
   ctx.stroke();
   ctx.setLineDash([]);
@@ -1866,7 +2353,7 @@ function updateS3A() {
     if (i === 0) ctx.moveTo(ax.toX(p), ax.toY(psi_eu));
     else ctx.lineTo(ax.toX(p), ax.toY(psi_eu));
   }
-  ctx.strokeStyle = '#3b82f6';
+  ctx.strokeStyle = "#3b82f6";
   ctx.lineWidth = 2;
   ctx.stroke();
 
@@ -1879,12 +2366,12 @@ function updateS3A() {
     if (i === 0) ctx.moveTo(ax.toX(p), ax.toY(psi_real));
     else ctx.lineTo(ax.toX(p), ax.toY(psi_real));
   }
-  ctx.strokeStyle = '#10b981';
+  ctx.strokeStyle = "#10b981";
   ctx.lineWidth = 2.5;
   ctx.stroke();
 
   const psi_op = Math.max(0, (sigma - phi2 / Math.tan(b2)) - (0.08 + 1.8 * Math.pow(phi2 - 0.28, 2)));
-  ctx.fillStyle = '#f59e0b';
+  ctx.fillStyle = "#f59e0b";
   ctx.beginPath();
   ctx.arc(ax.toX(phi2), ax.toY(psi_op), 5, 0, Math.PI * 2);
   ctx.fill();
@@ -1892,23 +2379,23 @@ function updateS3A() {
 
 // ==================== 3B: ASSIALI ====================
 function resetS3B() {
-  document.getElementById('s3b-chi').value = 0.50;
-  document.getElementById('s3b-phi').value = 0.55;
-  document.getElementById('s3b-psi').value = 0.35;
-  document.getElementById('s3b-u').value = 260;
+  document.getElementById("s3b-chi").value = 0.50;
+  document.getElementById("s3b-phi").value = 0.55;
+  document.getElementById("s3b-psi").value = 0.35;
+  document.getElementById("s3b-u").value = 260;
   updateS3B();
 }
 
 function updateS3B() {
-  const chi = parseFloat(document.getElementById('s3b-chi').value);
-  const phi = parseFloat(document.getElementById('s3b-phi').value);
-  const psi = parseFloat(document.getElementById('s3b-psi').value);
-  const u = parseFloat(document.getElementById('s3b-u').value);
+  const chi = parseFloat(document.getElementById("s3b-chi").value);
+  const phi = parseFloat(document.getElementById("s3b-phi").value);
+  const psi = parseFloat(document.getElementById("s3b-psi").value);
+  const u = parseFloat(document.getElementById("s3b-u").value);
 
-  document.getElementById('v-s3b-chi').textContent = chi.toFixed(2);
-  document.getElementById('v-s3b-phi').textContent = phi.toFixed(2);
-  document.getElementById('v-s3b-psi').textContent = psi.toFixed(2);
-  document.getElementById('v-s3b-u').textContent = `${u} m/s`;
+  document.getElementById("v-s3b-chi").textContent = chi.toFixed(2);
+  document.getElementById("v-s3b-phi").textContent = phi.toFixed(2);
+  document.getElementById("v-s3b-psi").textContent = psi.toFixed(2);
+  document.getElementById("v-s3b-u").textContent = `${u} m/s`;
 
   const c1u = u * (1 - chi - psi / 2);
   const c2u = u * (1 - chi + psi / 2);
@@ -1922,17 +2409,17 @@ function updateS3B() {
   const stall = deHaller < 0.72;
   const dh0 = (psi * u * u) / 1000;
 
-  document.getElementById('s3b-badge').textContent = stall ? 'STALLO (De Haller)' : 'Diffusione OK';
-  renderKPIs('kpi-s3b', [
-    { label: 'Criterio De Haller w₂/w₁', val: deHaller.toFixed(3), unit: '', status: stall ? 'danger' : 'ok' },
-    { label: 'Lavoro Stadio Δh₀', val: dh0.toFixed(1), unit: 'kJ/kg' },
-    { label: 'Velocità Assiale cₐ', val: ca.toFixed(0), unit: 'm/s' },
-    { label: 'Deviazione Δcᵤ', val: (c2u - c1u).toFixed(0), unit: 'm/s' }
+  document.getElementById("s3b-badge").textContent = stall ? "STALLO (De Haller)" : "Diffusione OK";
+  renderKPIs("kpi-s3b", [
+    { label: "Criterio De Haller w₂/w₁", val: deHaller.toFixed(3), unit: "", status: stall ? "danger" : "ok" },
+    { label: "Lavoro Stadio Δh₀", val: dh0.toFixed(1), unit: "kJ/kg" },
+    { label: "Velocità Assiale cₐ", val: ca.toFixed(0), unit: "m/s" },
+    { label: "Deviazione Δcᵤ", val: (c2u - c1u).toFixed(0), unit: "m/s" }
   ]);
 
-  document.getElementById('note-s3b').innerHTML = `Criterio di De Haller: w₂ / w₁ ≥ 0.72 per evitare distacco dello strato limite nel diffusore rotorico`;
+  document.getElementById("note-s3b").innerHTML = `Criterio di De Haller: w₂ / w₁ ≥ 0.72 per evitare distacco dello strato limite nel diffusore rotorico`;
 
-  const { ctx, w, h } = setupCanvas('cv-s3b');
+  const { ctx, w, h } = setupCanvas("cv-s3b");
   ctx.clearRect(0, 0, w, h);
   const ox = w * 0.25, oy = h * 0.80;
   const sc = (h * 0.62) / Math.max(ca, 100);
@@ -1940,55 +2427,55 @@ function updateS3B() {
   function vec(x0, y0, dx, dy, col, lbl) {
     ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 2.3;
     ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0 + dx, y0 + dy); ctx.stroke();
-    ctx.font = 'bold 11px monospace';
+    ctx.font = "bold 11px monospace";
     ctx.fillText(lbl, x0 + dx / 2 + 4, y0 + dy / 2 - 4);
   }
 
-  vec(ox, oy, u * sc, 0, '#f59e0b', 'u');
-  vec(ox, oy, c1u * sc, -ca * sc, '#3b82f6', 'c₁');
-  vec(ox + c1u * sc, oy - ca * sc, w1u * sc, ca * sc, '#06b6d4', 'w₁');
-  vec(ox, oy, c2u * sc, -ca * sc, '#10b981', 'c₂');
-  vec(ox + c2u * sc, oy - ca * sc, w2u * sc, ca * sc, '#8b5cf6', 'w₂');
+  vec(ox, oy, u * sc, 0, "#f59e0b", "u");
+  vec(ox, oy, c1u * sc, -ca * sc, "#3b82f6", "c₁");
+  vec(ox + c1u * sc, oy - ca * sc, w1u * sc, ca * sc, "#06b6d4", "w₁");
+  vec(ox, oy, c2u * sc, -ca * sc, "#10b981", "c₂");
+  vec(ox + c2u * sc, oy - ca * sc, w2u * sc, ca * sc, "#8b5cf6", "w₂");
 }
 
 // ==================== 4A: CICLI M.C.I. ====================
 function resetS4A() {
-  document.getElementById('s4a-cycle').value = 'otto';
-  document.getElementById('s4a-plane').value = 'pv';
-  document.getElementById('s4a-rho').value = 10.5;
-  document.getElementById('s4a-q1').value = 1400;
-  document.getElementById('s4a-lam').value = 1.45;
-  document.getElementById('s4a-p1').value = 1.0;
+  document.getElementById("s4a-cycle").value = "otto";
+  document.getElementById("s4a-plane").value = "pv";
+  document.getElementById("s4a-rho").value = 10.5;
+  document.getElementById("s4a-q1").value = 1400;
+  document.getElementById("s4a-lam").value = 1.45;
+  document.getElementById("s4a-p1").value = 1.0;
   updateS4A();
 }
 
 function updateS4A() {
   const { gamma, R, cp } = getFluid();
   const cv_g = cp - R;
-  const cycle = document.getElementById('s4a-cycle').value;
-  const plane = document.getElementById('s4a-plane').value;
-  const rho = parseFloat(document.getElementById('s4a-rho').value);
-  const q1 = parseFloat(document.getElementById('s4a-q1').value) * 1000;
-  const lam = parseFloat(document.getElementById('s4a-lam').value);
-  const p1 = parseFloat(document.getElementById('s4a-p1').value);
+  const cycle = document.getElementById("s4a-cycle").value;
+  const plane = document.getElementById("s4a-plane").value;
+  const rho = parseFloat(document.getElementById("s4a-rho").value);
+  const q1 = parseFloat(document.getElementById("s4a-q1").value) * 1000;
+  const lam = parseFloat(document.getElementById("s4a-lam").value);
+  const p1 = parseFloat(document.getElementById("s4a-p1").value);
   const T1 = 300;
 
-  document.getElementById('v-s4a-rho').textContent = rho.toFixed(1);
-  document.getElementById('v-s4a-q1').textContent = `${(q1 / 1000).toFixed(0)} kJ/kg`;
-  document.getElementById('v-s4a-lam').textContent = lam.toFixed(2);
-  document.getElementById('v-s4a-p1').textContent = `${p1.toFixed(1)} bar`;
-  document.getElementById('s4a-badge').textContent = plane === 'pv' ? 'Piano (p, V)' : 'Piano (T, s)';
+  document.getElementById("v-s4a-rho").textContent = rho.toFixed(1);
+  document.getElementById("v-s4a-q1").textContent = `${(q1 / 1000).toFixed(0)} kJ/kg`;
+  document.getElementById("v-s4a-lam").textContent = lam.toFixed(2);
+  document.getElementById("v-s4a-p1").textContent = `${p1.toFixed(1)} bar`;
+  document.getElementById("s4a-badge").textContent = plane === "pv" ? "Piano (p, V)" : "Piano (T, s)";
 
   const p2 = p1 * Math.pow(rho, gamma);
   const T2 = T1 * Math.pow(rho, gamma - 1);
 
   let p3, T3, T4, tau = 1, eta_th;
-  if (cycle === 'otto') {
+  if (cycle === "otto") {
     T3 = T2 + q1 / cv_g;
     p3 = p2 * (T3 / T2);
     T4 = T3 / Math.pow(rho, gamma - 1);
     eta_th = 1 - 1 / Math.pow(rho, gamma - 1);
-  } else if (cycle === 'diesel') {
+  } else if (cycle === "diesel") {
     p3 = p2;
     T3 = T2 + q1 / cp;
     tau = T3 / T2;
@@ -2010,20 +2497,20 @@ function updateS4A() {
   const v2 = v1 / rho;
   const pmi = (L_net * 1000) / ((v1 - v2) * 1e5);
 
-  renderKPIs('kpi-s4a', [
-    { label: 'Rendimento Termico η_th', val: (eta_th * 100).toFixed(1), unit: '%', status: 'ok' },
-    { label: 'Pressione Picco p_max', val: p3.toFixed(1), unit: 'bar', status: p3 > 130 ? 'warn' : '' },
-    { label: 'Temperatura Picco T_max', val: T3.toFixed(0), unit: 'K' },
-    { label: 'Pressione Media Indic. pmi', val: pmi.toFixed(2), unit: 'bar' }
+  renderKPIs("kpi-s4a", [
+    { label: "Rendimento Termico η_th", val: (eta_th * 100).toFixed(1), unit: "%", status: "ok" },
+    { label: "Pressione Picco p_max", val: p3.toFixed(1), unit: "bar", status: p3 > 130 ? "warn" : "" },
+    { label: "Temperatura Picco T_max", val: T3.toFixed(0), unit: "K" },
+    { label: "Pressione Media Indic. pmi", val: pmi.toFixed(2), unit: "bar" }
   ]);
 
-  document.getElementById('note-s4a').innerHTML = cycle === 'otto'
+  document.getElementById("note-s4a").innerHTML = cycle === "otto"
     ? `η_otto = 1 - 1 / ρ^(γ-1) = ${(eta_th * 100).toFixed(1)}% &nbsp;|&nbsp; Introduzione calore isocora`
     : `τ (rapporto espansione preliminare) = ${tau.toFixed(2)} &nbsp;|&nbsp; pmi = L_ciclo / Vc = ${pmi.toFixed(2)} bar`;
 
-  const { ctx, w, h } = setupCanvas('cv-s4a');
-  if (plane === 'pv') {
-    const ax = drawAxes(ctx, w, h, { l: 44, r: 20, t: 22, b: 28 }, 'V / V₂', 'p [bar]', 0.8, rho * 1.05, 0, p3 * 1.12);
+  const { ctx, w, h } = setupCanvas("cv-s4a");
+  if (plane === "pv") {
+    const ax = drawAxes(ctx, w, h, { l: 44, r: 20, t: 22, b: 28 }, "V / V₂", "p [bar]", 0.8, rho * 1.05, 0, p3 * 1.12);
     ctx.beginPath();
     for (let i = 0; i <= 30; i++) {
       const vr = rho - (i / 30) * (rho - 1);
@@ -2031,29 +2518,29 @@ function updateS4A() {
       if (i === 0) ctx.moveTo(ax.toX(vr), ax.toY(pr));
       else ctx.lineTo(ax.toX(vr), ax.toY(pr));
     }
-    if (cycle === 'otto') {
+    if (cycle === "otto") {
       ctx.lineTo(ax.toX(1), ax.toY(p3));
-    } else if (cycle === 'diesel') {
+    } else if (cycle === "diesel") {
       ctx.lineTo(ax.toX(tau), ax.toY(p3));
     } else {
       ctx.lineTo(ax.toX(1), ax.toY(p3));
       ctx.lineTo(ax.toX(tau), ax.toY(p3));
     }
-    const vStartExp = cycle === 'otto' ? 1 : tau;
+    const vStartExp = cycle === "otto" ? 1 : tau;
     for (let i = 0; i <= 30; i++) {
       const vr = vStartExp + (i / 30) * (rho - vStartExp);
       const pr = p3 * Math.pow(vStartExp / vr, gamma);
       ctx.lineTo(ax.toX(vr), ax.toY(pr));
     }
     ctx.closePath();
-    ctx.fillStyle = 'rgba(245, 158, 11, 0.20)';
+    ctx.fillStyle = "rgba(245, 158, 11, 0.20)";
     ctx.fill();
-    ctx.strokeStyle = '#f59e0b';
+    ctx.strokeStyle = "#f59e0b";
     ctx.lineWidth = 2.3;
     ctx.stroke();
   } else {
-    const ax = drawAxes(ctx, w, h, { l: 44, r: 20, t: 22, b: 28 }, 's [kJ/kgK]', 'T [K]', 0, 2.2, 250, T3 * 1.1);
-    const ds = cycle === 'otto' ? (cv_g / 1000) * Math.log(T3 / T2) : (cp / 1000) * Math.log(T3 / T2);
+    const ax = drawAxes(ctx, w, h, { l: 44, r: 20, t: 22, b: 28 }, "s [kJ/kgK]", "T [K]", 0, 2.2, 250, T3 * 1.1);
+    const ds = cycle === "otto" ? (cv_g / 1000) * Math.log(T3 / T2) : (cp / 1000) * Math.log(T3 / T2);
     ctx.beginPath();
     ctx.moveTo(ax.toX(0.3), ax.toY(T1));
     ctx.lineTo(ax.toX(0.3), ax.toY(T2));
@@ -2069,51 +2556,82 @@ function updateS4A() {
       ctx.lineTo(ax.toX(0.3 + f * ds), ax.toY(Ts));
     }
     ctx.closePath();
-    ctx.fillStyle = 'rgba(6, 182, 212, 0.20)';
+    ctx.fillStyle = "rgba(6, 182, 212, 0.20)";
     ctx.fill();
-    ctx.strokeStyle = '#06b6d4';
+    ctx.strokeStyle = "#06b6d4";
     ctx.lineWidth = 2.3;
     ctx.stroke();
   }
 }
 
-// ==================== 5: RISOLUTORE ESERCIZI ====================
+// ==================== 5: RISOLUTORE UNIVERSALE D'ESAME (10 SCHEMI) ====================
 const SOLVER_SCHEMAS = {
   alt1: {
     fields: [
-      { id: 'D', label: 'Alesaggio D (mm)', val: 130 },
-      { id: 'c', label: 'Corsa c (mm)', val: 105 },
-      { id: 'mu', label: 'Grado spazio morto μ (%)', val: 4 },
-      { id: 'p1', label: 'Pressione p₁ (bar)', val: 1.0 },
-      { id: 'p2', label: 'Pressione p₂ (bar)', val: 5.5 },
-      { id: 'n', label: 'Giri n (rpm)', val: 780 },
-      { id: 'm', label: 'Politropica m', val: 1.30 }
+      { id: "D", label: "Alesaggio D (mm)", val: 130 },
+      { id: "c", label: "Corsa c (mm)", val: 105 },
+      { id: "mu", label: "Spazio morto μ (%)", val: 4 },
+      { id: "p1", label: "Aspirazione p₁ (bar)", val: 1.0 },
+      { id: "p2", label: "Mandata p₂ (bar)", val: 5.5 },
+      { id: "T1", label: "Temp. T₁ (°C)", val: 20 },
+      { id: "n", label: "Regime n (rpm)", val: 780 },
+      { id: "m", label: "Politropica m", val: 1.30 }
     ],
     solve: (v, fl) => {
-      const Vc = (Math.PI / 4) * Math.pow(v.D / 1000, 2) * (v.c / 1000);
-      const Vn = (v.mu / 100) * Vc;
-      const cm = (2 * (v.c / 1000) * v.n) / 60;
-      const beta = v.p2 / v.p1;
-      const etav = 1 - (v.mu / 100) * (Math.pow(beta, 1 / v.m) - 1);
-      const rho1 = (v.p1 * 1e5) / (fl.R * 293.15);
+      const Dm = v.D / 1000, cm_stroke = v.c / 1000, mu = v.mu / 100;
+      const p1Pa = v.p1 * 1e5, p2Pa = v.p2 * 1e5, T1K = v.T1 + 273.15;
+      const Vc = (Math.PI / 4) * Dm * Dm * cm_stroke;
+      const Vn = mu * Vc;
+      const velPist = (2 * cm_stroke * v.n) / 60;
+      const beta = p2Pa / p1Pa;
+      const betaLim = mu > 0 ? Math.pow(1 / mu + 1, v.m) : 999;
+      const etav = Math.max(0, 1 - mu * (Math.pow(beta, 1 / v.m) - 1));
+      const rho1 = p1Pa / (fl.R * T1K);
       const mdot = rho1 * Vc * etav * (v.n / 60);
-      const L = (v.m / (v.m - 1)) * fl.R * 293.15 * (Math.pow(beta, (v.m - 1) / v.m) - 1) / 1000;
+      const L = (v.m / (v.m - 1)) * fl.R * T1K * (Math.pow(beta, (v.m - 1) / v.m) - 1) / 1000;
       const P = mdot * L;
-      return [
-        { t: '1. Cilindrata Vc e Volume Nocivo Vₙ', f: 'Vc = (π/4)·D²·c ; Vₙ = μ·Vc', r: `Vc = ${(Vc * 1e6).toFixed(1)} cm³ | Vₙ = ${(Vn * 1e6).toFixed(1)} cm³` },
-        { t: '2. Velocità Media Stantuffo cₘ', f: 'cₘ = 2·c·n / 60', r: `cₘ = ${cm.toFixed(2)} m/s` },
-        { t: '3. Rendimento Volumetrico ηᵥ', f: 'ηᵥ = 1 - μ·(β^(1/m) - 1)', r: `ηᵥ = ${(etav * 100).toFixed(2)} % (β = ${beta.toFixed(2)})` },
-        { t: '4. Portata Massica e Potenza Teorica', f: 'ṁ = ρ₁·Vc·ηᵥ·(n/60) ; P = ṁ·|L|', r: `ṁ = ${(mdot * 1000).toFixed(2)} g/s | P = ${P.toFixed(2)} kW` }
-      ];
+      const diag = etav <= 0
+        ? { cls: "danger", msg: `ATTENZIONE: β (${beta.toFixed(2)}) ≥ β_lim (${betaLim.toFixed(2)}) → Il compressore non aspira fluido (ηᵥ = 0)!` }
+        : { cls: "ok", msg: `Verifica positiva: β = ${beta.toFixed(2)} < β_lim = ${betaLim.toFixed(2)}. Funzionamento regolare.` };
+      return {
+        si: `D = ${Dm.toFixed(4)} m | c = ${cm_stroke.toFixed(4)} m | p₁ = ${p1Pa.toFixed(0)} Pa | p₂ = ${p2Pa.toFixed(0)} Pa | T₁ = ${T1K.toFixed(2)} K`,
+        diag,
+        steps: [
+          {
+            t: "1. Cilindrata Vc e Volume Nocivo Vₙ",
+            f: "Vc = (π/4)·D²·c ; Vₙ = μ·Vc",
+            s: `Vc = (π/4)·(${Dm.toFixed(3)})²·(${cm_stroke.toFixed(3)}) = ${(Vc * 1e6).toFixed(2)} cm³`,
+            r: `Vc = ${(Vc * 1e6).toFixed(2)} cm³ (${Vc.toExponential(3)} m³) | Vₙ = ${(Vn * 1e6).toFixed(2)} cm³`
+          },
+          {
+            t: "2. Velocità Media Stantuffo cₘ",
+            f: "cₘ = 2·c·n / 60",
+            s: `cₘ = 2 · ${cm_stroke.toFixed(3)} · ${v.n} / 60`,
+            r: `cₘ = ${velPist.toFixed(2)} m/s`
+          },
+          {
+            t: "3. Rendimento Volumetrico ηᵥ",
+            f: "β = p₂/p₁ ; ηᵥ = 1 - μ·(β^(1/m) - 1)",
+            s: `ηᵥ = 1 - ${mu.toFixed(3)} · (${beta.toFixed(2)}^(1/${v.m}) - 1)`,
+            r: `ηᵥ = ${(etav * 100).toFixed(2)} % (β = ${beta.toFixed(2)})`
+          },
+          {
+            t: "4. Portata Massica ṁ, Lavoro Specifico |L| e Potenza Teorica P",
+            f: "ρ₁ = p₁/(R·T₁) ; ṁ = ρ₁·Vc·ηᵥ·(n/60) ; |L| = [m/(m-1)]·R·T₁·(β^((m-1)/m) - 1)",
+            s: `ρ₁ = ${rho1.toFixed(3)} kg/m³ ; ṁ = ${rho1.toFixed(3)}·${Vc.toExponential(3)}·${etav.toFixed(3)}·(${v.n}/60)`,
+            r: `ṁ = ${(mdot * 1000).toFixed(2)} g/s | |L| = ${L.toFixed(2)} kJ/kg | P = ${P.toFixed(2)} kW`
+          }
+        ]
+      };
     }
   },
   alt_reg: {
     fields: [
-      { id: 'Vc', label: 'Cilindrata Vc (cm³)', val: 1500 },
-      { id: 'Vn', label: 'Volume nocivo Vₙ (cm³)', val: 130 },
-      { id: 'beta', label: 'Rapporto compressione β', val: 6.0 },
-      { id: 'me', label: 'Politropica espansione m\'', val: 1.38 },
-      { id: 'rid', label: 'Riduzione portata (%)', val: 50 }
+      { id: "Vc", label: "Cilindrata Vc (cm³)", val: 1500 },
+      { id: "Vn", label: "Volume nocivo Vₙ (cm³)", val: 130 },
+      { id: "beta", label: "Rapporto compressione β", val: 6.0 },
+      { id: "me", label: "Politropica espansione m\"", val: 1.38 },
+      { id: "rid", label: "Riduzione portata (%)", val: 50 }
     ],
     solve: (v) => {
       const mu1 = v.Vn / v.Vc;
@@ -2122,137 +2640,553 @@ const SOLVER_SCHEMAS = {
       const etav2 = etav1 * (1 - v.rid / 100);
       const mu2 = (1 - etav2) / fac;
       const dVn = (mu2 - mu1) * v.Vc;
-      return [
-        { t: '1. Rendimento Volumetrico Iniziale ηᵥ₁', f: 'μ₁ = Vₙ / Vc ; ηᵥ₁ = 1 - μ₁·(β^(1/m\') - 1)', r: `μ₁ = ${(mu1 * 100).toFixed(2)}% | ηᵥ₁ = ${(etav1 * 100).toFixed(2)}%` },
-        { t: '2. Nuovo Rendimento Volumetrico Target ηᵥ₂', f: 'ηᵥ₂ = ηᵥ₁ · (1 - Δṁ/ṁ)', r: `ηᵥ₂ = ${(etav2 * 100).toFixed(2)}%` },
-        { t: '3. Volume Addizionale Richiesto ΔVₙ', f: 'μ₂ = (1 - ηᵥ₂) / (β^(1/m\') - 1) ; ΔVₙ = (μ₂ - μ₁)·Vc', r: `μ₂ = ${(mu2 * 100).toFixed(2)}% | ΔVₙ = ${dVn.toFixed(1)} cm³` }
-      ];
+      return {
+        si: `Vc = ${(v.Vc * 1e-6).toExponential(3)} m³ | Vₙ = ${(v.Vn * 1e-6).toExponential(3)} m³ | β = ${v.beta}`,
+        diag: { cls: "ok", msg: `La regolazione mediante camera addizionale ΔVₙ varia ηᵥ senza dissipazioni di laminazione.` },
+        steps: [
+          {
+            t: "1. Grado di Spazio Morto e Rendimento Volumetrico Iniziale",
+            f: "μ₁ = Vₙ / Vc ; ηᵥ₁ = 1 - μ₁·(β^(1/m\") - 1)",
+            s: `μ₁ = ${v.Vn}/${v.Vc} = ${mu1.toFixed(4)} ; ηᵥ₁ = 1 - ${mu1.toFixed(4)}·(${v.beta}^(1/${v.me}) - 1)`,
+            r: `μ₁ = ${(mu1 * 100).toFixed(2)}% | ηᵥ₁ = ${(etav1 * 100).toFixed(2)}%`
+          },
+          {
+            t: "2. Nuovo Rendimento Volumetrico Target ηᵥ₂",
+            f: "ηᵥ₂ = ηᵥ₁ · (1 - Δṁ/ṁ)",
+            s: `ηᵥ₂ = ${etav1.toFixed(4)} · (1 - ${(v.rid / 100).toFixed(2)})`,
+            r: `ηᵥ₂ = ${(etav2 * 100).toFixed(2)}%`
+          },
+          {
+            t: "3. Volume Nocivo Addizionale Richiesto ΔVₙ",
+            f: "μ₂ = (1 - ηᵥ₂) / (β^(1/m\") - 1) ; ΔVₙ = (μ₂ - μ₁)·Vc",
+            s: `μ₂ = ${(1 - etav2).toFixed(4)} / ${fac.toFixed(4)} = ${mu2.toFixed(4)} ; ΔVₙ = (${mu2.toFixed(4)} - ${mu1.toFixed(4)})·${v.Vc}`,
+            r: `μ₂ = ${(mu2 * 100).toFixed(2)}% | ΔVₙ = ${dVn.toFixed(1)} cm³`
+          }
+        ]
+      };
     }
   },
   alt2: {
     fields: [
-      { id: 'p1', label: 'Aspirazione p₁ (bar)', val: 1.01 },
-      { id: 'p2', label: 'Mandata p₂ (bar)', val: 29.95 },
-      { id: 'T1', label: 'Temp. T₁ (°C)', val: 15 },
-      { id: 'Q', label: 'Portata asp. Q (dm³/s)', val: 22.8 },
-      { id: 'etac', label: 'Rendimento comp. ηc', val: 0.70 }
+      { id: "p1", label: "Aspirazione p₁ (bar)", val: 1.01 },
+      { id: "p2", label: "Mandata p₂ (bar)", val: 29.95 },
+      { id: "T1", label: "Temp. T₁ (°C)", val: 15 },
+      { id: "Q", label: "Portata asp. Q (dm³/s)", val: 22.8 },
+      { id: "etac", label: "Rendimento comp. ηc", val: 0.70 }
     ],
     solve: (v, fl) => {
-      const T1K = v.T1 + 273.15;
-      const betaTot = v.p2 / v.p1;
+      const p1Pa = v.p1 * 1e5, p2Pa = v.p2 * 1e5, T1K = v.T1 + 273.15, Qm3s = v.Q / 1000;
+      const betaTot = p2Pa / p1Pa;
       const betaOpt = Math.sqrt(betaTot);
       const pInt = v.p1 * betaOpt;
       const T2s = T1K * Math.pow(betaOpt, (fl.gamma - 1) / fl.gamma);
-      const rho1 = (v.p1 * 1e5) / (fl.R * T1K);
-      const mdot = rho1 * (v.Q / 1000);
+      const rho1 = p1Pa / (fl.R * T1K);
+      const mdot = rho1 * Qm3s;
       const Llim = 2 * (fl.gamma / (fl.gamma - 1)) * fl.R * T1K * (Math.pow(betaOpt, (fl.gamma - 1) / fl.gamma) - 1) / 1000;
+      const Lmono = (fl.gamma / (fl.gamma - 1)) * fl.R * T1K * (Math.pow(betaTot, (fl.gamma - 1) / fl.gamma) - 1) / 1000;
       const Plim = mdot * Llim;
       const Peff = Plim / v.etac;
-      return [
-        { t: '1. Rapporto Ottimale & Pressione Intermedia', f: 'β_opt = √(p₂/p₁) ; p_int = p₁·β_opt', r: `β_opt = ${betaOpt.toFixed(2)} | p_int = ${pInt.toFixed(2)} bar` },
-        { t: '2. Temperatura Uscita Stadio T₂', f: 'T₂ = T₁ · β_opt^((γ-1)/γ)', r: `T₂ = ${T2s.toFixed(1)} K (${(T2s - 273.15).toFixed(1)} °C)` },
-        { t: '3. Potenza Limite ed Effettiva', f: 'P_lim = 2·ṁ·L_1stadio ; P_eff = P_lim / ηc', r: `P_lim = ${Plim.toFixed(2)} kW | P_eff = ${Peff.toFixed(2)} kW` }
-      ];
+      return {
+        si: `p₁ = ${p1Pa.toFixed(0)} Pa | p₂ = ${p2Pa.toFixed(0)} Pa | T₁ = ${T1K.toFixed(2)} K | Q = ${Qm3s.toFixed(5)} m³/s`,
+        diag: { cls: "ok", msg: `Risparmio energetico rispetto al monostadio isoentropico: ${(((Lmono - Llim) / Lmono) * 100).toFixed(1)}%` },
+        steps: [
+          {
+            t: "1. Rapporto Ottimale & Pressione Intermedia",
+            f: "β_tot = p₂/p₁ ; β_opt = √β_tot ; p_int = p₁·β_opt",
+            s: `β_tot = ${betaTot.toFixed(2)} → β_opt = √${betaTot.toFixed(2)} = ${betaOpt.toFixed(2)}`,
+            r: `β_opt = ${betaOpt.toFixed(2)} | p_int = ${pInt.toFixed(2)} bar`
+          },
+          {
+            t: "2. Temperatura Uscita Stadio T₂ (Isoentropica)",
+            f: "T₂ = T₁ · β_opt^((γ-1)/γ)",
+            s: `T₂ = ${T1K.toFixed(2)} · ${betaOpt.toFixed(2)}^(${((fl.gamma - 1) / fl.gamma).toFixed(3)})`,
+            r: `T₂ = ${T2s.toFixed(1)} K (${(T2s - 273.15).toFixed(1)} °C)`
+          },
+          {
+            t: "3. Potenza Limite ed Effettiva Assorbita",
+            f: "ṁ = [p₁/(R·T₁)]·Q ; P_lim = 2·ṁ·|L_1stadio| ; P_eff = P_lim / ηc",
+            s: `ṁ = ${mdot.toFixed(4)} kg/s ; |L_tot| = ${Llim.toFixed(2)} kJ/kg`,
+            r: `P_lim = ${Plim.toFixed(2)} kW | P_eff = ${Peff.toFixed(2)} kW`
+          }
+        ]
+      };
     }
   },
   roots: {
     fields: [
-      { id: 'p1', label: 'Aspirazione p₁ (bar)', val: 1.0 },
-      { id: 'p2', label: 'Mandata p₂ (bar)', val: 1.5 },
-      { id: 'T1', label: 'Temp. T₁ (°C)', val: 20 },
-      { id: 'mdot', label: 'Portata ṁ (kg/s)', val: 1.0 },
-      { id: 'etav', label: 'Rend. vol. ηᵥ', val: 0.75 },
-      { id: 'etam', label: 'Rend. mecc. ηₘ', val: 0.90 }
+      { id: "p1", label: "Aspirazione p₁ (bar)", val: 1.0 },
+      { id: "p2", label: "Mandata p₂ (bar)", val: 1.5 },
+      { id: "T1", label: "Temp. T₁ (°C)", val: 20 },
+      { id: "mdot", label: "Portata ṁ (kg/s)", val: 1.0 },
+      { id: "etav", label: "Rend. vol. ηᵥ", val: 0.75 },
+      { id: "etam", label: "Rend. mecc. ηₘ", val: 0.90 }
     ],
     solve: (v, fl) => {
-      const T1K = v.T1 + 273.15;
-      const rho1 = (v.p1 * 1e5) / (fl.R * T1K);
+      const p1Pa = v.p1 * 1e5, p2Pa = v.p2 * 1e5, T1K = v.T1 + 273.15;
+      const rho1 = p1Pa / (fl.R * T1K);
       const Q = v.mdot / rho1;
-      const L_spec = ((v.p2 - v.p1) * 1e5) / (rho1 * v.etav * 1000);
+      const L_spec = (p2Pa - p1Pa) / (rho1 * v.etav * 1000);
       const P_ass = (v.mdot * L_spec) / v.etam;
-      return [
-        { t: '1. Densità e Portata Volumetrica Aspirata', f: 'ρ₁ = p₁ / (R·T₁) ; Q = ṁ / ρ₁', r: `ρ₁ = ${rho1.toFixed(3)} kg/m³ | Q = ${Q.toFixed(3)} m³/s` },
-        { t: '2. Lavoro Specifico Esterno (Ciclo Rettangolare)', f: 'L = (p₂ - p₁) / (ρ₁ · ηᵥ)', r: `L = ${L_spec.toFixed(2)} kJ/kg` },
-        { t: '3. Potenza Assorbita all\'Albero', f: 'P_ass = (ṁ · L) / ηₘ', r: `P_ass = ${P_ass.toFixed(2)} kW` }
-      ];
+      const L_is = (fl.gamma / (fl.gamma - 1)) * fl.R * T1K * (Math.pow(p2Pa / p1Pa, (fl.gamma - 1) / fl.gamma) - 1) / 1000;
+      const eta_ad = (L_is / L_spec) * 100;
+      return {
+        si: `p₁ = ${p1Pa.toFixed(0)} Pa | p₂ = ${p2Pa.toFixed(0)} Pa | T₁ = ${T1K.toFixed(2)} K`,
+        diag: { cls: "warn", msg: `Rendimento adiabatico interno η_ad = ${eta_ad.toFixed(1)}%: nei Roots cala rapidamente per β > 2.` },
+        steps: [
+          {
+            t: "1. Densità e Portata Volumetrica Aspirata",
+            f: "ρ₁ = p₁ / (R·T₁) ; Q = ṁ / ρ₁",
+            s: `ρ₁ = ${p1Pa.toFixed(0)} / (${fl.R}·${T1K.toFixed(2)}) = ${rho1.toFixed(3)} kg/m³`,
+            r: `ρ₁ = ${rho1.toFixed(3)} kg/m³ | Q = ${Q.toFixed(3)} m³/s`
+          },
+          {
+            t: "2. Lavoro Specifico Esterno (Ciclo Rettangolare)",
+            f: "|L| = (p₂ - p₁) / (ρ₁ · ηᵥ)",
+            s: `|L| = (${p2Pa.toFixed(0)} - ${p1Pa.toFixed(0)}) / (${rho1.toFixed(3)} · ${v.etav})`,
+            r: `|L| = ${L_spec.toFixed(2)} kJ/kg (vs L_is = ${L_is.toFixed(2)} kJ/kg)`
+          },
+          {
+            t: "3. Potenza Assorbita all'Albero",
+            f: "P_ass = (ṁ · |L|) / ηₘ",
+            s: `P_ass = (${v.mdot} · ${L_spec.toFixed(2)}) / ${v.etam}`,
+            r: `P_ass = ${P_ass.toFixed(2)} kW`
+          }
+        ]
+      };
     }
   },
   pump: {
     fields: [
-      { id: 'Q', label: 'Portata Q (m³/h)', val: 120 },
-      { id: 'H', label: 'Prevalenza H (m)', val: 38 },
-      { id: 'rho', label: 'Densità ρ (kg/m³)', val: 1000 },
-      { id: 'etag', label: 'Rend. globale η_g', val: 0.74 }
+      { id: "Q", label: "Portata Q (m³/h)", val: 120 },
+      { id: "H", label: "Prevalenza H (m)", val: 38 },
+      { id: "za", label: "Altezza asp. Zₐ (m)", val: 4.0 },
+      { id: "ya", label: "Perdite asp. Yₐ (m)", val: 1.5 },
+      { id: "pv", label: "Tens. vapore p_v (bar)", val: 0.032 },
+      { id: "npsh_r", label: "NPSH richiesto (m)", val: 3.2 },
+      { id: "etag", label: "Rend. globale η_g", val: 0.74 }
     ],
     solve: (v) => {
       const Qs = v.Q / 3600;
-      const Pu = (v.rho * 9.81 * Qs * v.H) / 1000;
+      const rho = 998;
+      const patm = 101325;
+      const pvPa = v.pv * 1e5;
+      const npsh_d = (patm - pvPa) / (rho * 9.81) - v.za - v.ya;
+      const Pu = (rho * 9.81 * Qs * v.H) / 1000;
       const Pa = Pu / v.etag;
-      return [
-        { t: '1. Portata in Unità SI', f: 'Q = Q_h / 3600', r: `Q = ${Qs.toFixed(4)} m³/s` },
-        { t: '2. Potenza Idraulica Utile', f: 'P_u = ρ · g · Q · H', r: `P_u = ${Pu.toFixed(2)} kW` },
-        { t: '3. Potenza Assorbita all\'Albero', f: 'P_ass = P_u / η_g', r: `P_ass = ${Pa.toFixed(2)} kW` }
-      ];
+      const ok = npsh_d > v.npsh_r;
+      return {
+        si: `Q = ${Qs.toFixed(5)} m³/s | H = ${v.H} m | p_atm = 101325 Pa | p_v = ${pvPa.toFixed(0)} Pa`,
+        diag: ok
+          ? { cls: "ok", msg: `Verifica anti-cavitazione SUPERATA: NPSH_disp (${npsh_d.toFixed(2)} m) > NPSH_req (${v.npsh_r.toFixed(2)} m).` }
+          : { cls: "danger", msg: `ALLARME CAVITAZIONE: NPSH_disp (${npsh_d.toFixed(2)} m) ≤ NPSH_req (${v.npsh_r.toFixed(2)} m)!` },
+        steps: [
+          {
+            t: "1. Calcolo NPSH Disponibile dell'Impianto",
+            f: "NPSH_disp = (p_atm - p_v)/(ρ·g) - Zₐ - Yₐ",
+            s: `NPSH_disp = (101325 - ${pvPa.toFixed(0)})/(998·9.81) - ${v.za} - ${v.ya}`,
+            r: `NPSH_disp = ${npsh_d.toFixed(2)} m`
+          },
+          {
+            t: "2. Potenza Idraulica Utile",
+            f: "P_u = ρ · g · Q · H",
+            s: `P_u = 998 · 9.81 · ${Qs.toFixed(5)} · ${v.H}`,
+            r: `P_u = ${Pu.toFixed(2)} kW`
+          },
+          {
+            t: "3. Potenza Assorbita all'Albero",
+            f: "P_ass = P_u / η_g",
+            s: `P_ass = ${Pu.toFixed(2)} / ${v.etag}`,
+            r: `P_ass = ${Pa.toFixed(2)} kW`
+          }
+        ]
+      };
     }
   },
-  turb: {
+  nozzle: {
     fields: [
-      { id: 'u', label: 'Velocità periferica u (m/s)', val: 240 },
-      { id: 'c1u', label: 'Comp. tangenziale c₁ᵤ (m/s)', val: 420 },
-      { id: 'c2u', label: 'Comp. tangenziale c₂ᵤ (m/s)', val: -40 },
-      { id: 'ca', label: 'Velocità assiale cₐ (m/s)', val: 150 }
+      { id: "p0", label: "Pressione monte p₀ (bar)", val: 6.0 },
+      { id: "T0", label: "Temp. monte T₀ (°C)", val: 320 },
+      { id: "pamb", label: "Pressione valle p_amb (bar)", val: 1.5 },
+      { id: "A2", label: "Area uscita A₂ (cm²)", val: 4.5 },
+      { id: "phi2", label: "Rend. ugello φ²", val: 0.95 }
+    ],
+    solve: (v, fl) => {
+      const p0Pa = v.p0 * 1e5, T0K = v.T0 + 273.15, pambPa = v.pamb * 1e5, A2m2 = v.A2 * 1e-4;
+      const pCr = p0Pa / fl.betaCr;
+      const choked = pambPa <= pCr;
+      const p2 = choked ? pCr : pambPa;
+      const betaEff = p0Pa / p2;
+      const T2is = T0K / Math.pow(betaEff, (fl.gamma - 1) / fl.gamma);
+      const c2 = Math.sqrt(2 * fl.cp * (T0K - T2is) * v.phi2);
+      const T2 = T0K - (c2 * c2) / (2 * fl.cp);
+      const rho2 = p2 / (fl.R * T2);
+      const mdot = rho2 * A2m2 * c2;
+      return {
+        si: `p₀ = ${p0Pa.toFixed(0)} Pa | T₀ = ${T0K.toFixed(2)} K | p_amb = ${pambPa.toFixed(0)} Pa | A₂ = ${A2m2.toExponential(3)} m²`,
+        diag: choked
+          ? { cls: "warn", msg: `BLOCCO SONICO (Choking): p_amb (${v.pamb} bar) ≤ p* (${(pCr / 1e5).toFixed(2)} bar). La sezione di uscita è bloccata a p₂ = p* e M₂ ≈ 1!` }
+          : { cls: "ok", msg: `Regime subsonico adattato: p_amb > p*, quindi p₂ = p_amb = ${v.pamb} bar.` },
+        steps: [
+          {
+            t: "1. Pressione Critica p* e Verifica Regime",
+            f: "β_cr = [(γ+1)/2]^(γ/(γ-1)) ; p* = p₀ / β_cr",
+            s: `β_cr = ${fl.betaCr.toFixed(3)} → p* = ${(p0Pa / 1e5).toFixed(2)} / ${fl.betaCr.toFixed(3)} = ${(pCr / 1e5).toFixed(3)} bar`,
+            r: `p* = ${(pCr / 1e5).toFixed(3)} bar → Pressione eff. uscita p₂ = ${(p2 / 1e5).toFixed(3)} bar`
+          },
+          {
+            t: "2. Velocità di Efflusso Reale c₂ e Temperatura T₂",
+            f: "T₂,is = T₀ / (p₀/p₂)^((γ-1)/γ) ; c₂ = √[2·cₚ·(T₀ - T₂,is)·φ²]",
+            s: `T₂,is = ${T2is.toFixed(1)} K ; c₂ = √[2·${fl.cp.toFixed(1)}·(${T0K.toFixed(1)} - ${T2is.toFixed(1)})·${v.phi2}]`,
+            r: `c₂ = ${c2.toFixed(1)} m/s | T₂ = ${T2.toFixed(1)} K`
+          },
+          {
+            t: "3. Densità in Sezione Uscita e Portata Massica ṁ",
+            f: "ρ₂ = p₂ / (R·T₂) ; ṁ = ρ₂ · A₂ · c₂",
+            s: `ρ₂ = ${rho2.toFixed(3)} kg/m³ ; ṁ = ${rho2.toFixed(3)} · ${A2m2.toExponential(3)} · ${c2.toFixed(1)}`,
+            r: `ṁ = ${mdot.toFixed(4)} kg/s (${(mdot * 3600).toFixed(1)} kg/h)`
+          }
+        ]
+      };
+    }
+  },
+  pelton: {
+    fields: [
+      { id: "H", label: "Salto netto H (m)", val: 320 },
+      { id: "d", label: "Diametro getto d (mm)", val: 65 },
+      { id: "D", label: "Diametro Pelton D (m)", val: 1.4 },
+      { id: "n", label: "Regime n (rpm)", val: 500 },
+      { id: "b2", label: "Angolo pala β₂ (°)", val: 165 },
+      { id: "phin", label: "Coeff. ugello φ_n", val: 0.98 },
+      { id: "psi", label: "Attrito pala ψ", val: 0.92 }
     ],
     solve: (v) => {
-      const L = v.u * (v.c1u - v.c2u);
-      const w1 = Math.sqrt(v.ca * v.ca + Math.pow(v.c1u - v.u, 2));
-      const w2 = Math.sqrt(v.ca * v.ca + Math.pow(v.c2u - v.u, 2));
-      const c1 = Math.sqrt(v.ca * v.ca + v.c1u * v.c1u);
-      const c2 = Math.sqrt(v.ca * v.ca + v.c2u * v.c2u);
-      const dh_rot = (w2 * w2 - w1 * w1) / 2;
-      const dh_stat = (c1 * c1 - c2 * c2) / 2;
-      const chi = dh_rot / (dh_rot + dh_stat);
-      return [
-        { t: '1. Lavoro Euleriano (Turbomacchina Motrice)', f: 'L = u · (c₁ᵤ - c₂ᵤ)', r: `L = ${(L / 1000).toFixed(2)} kJ/kg` },
-        { t: '2. Salti Entalpici Statore e Rotore', f: 'Δh_stat = (c₁² - c₂²)/2 ; Δh_rot = (w₂² - w₁²)/2', r: `Δh_stat = ${(dh_stat / 1000).toFixed(2)} kJ/kg | Δh_rot = ${(dh_rot / 1000).toFixed(2)} kJ/kg` },
-        { t: '3. Grado di Reazione χ', f: 'χ = Δh_rot / (Δh_rot + Δh_stat)', r: `χ = ${chi.toFixed(3)}` }
-      ];
+      const dm = v.d / 1000, b2r = (v.b2 * Math.PI) / 180;
+      const c1 = v.phin * Math.sqrt(2 * 9.81 * v.H);
+      const u = (Math.PI * v.D * v.n) / 60;
+      const Aj = (Math.PI / 4) * dm * dm;
+      const Q = Aj * c1;
+      const L = u * (c1 - u) * (1 - v.psi * Math.cos(b2r));
+      const etaid = L / (9.81 * v.H);
+      const P = 1000 * Q * L / 1000;
+      return {
+        si: `H = ${v.H} m | d = ${dm.toFixed(4)} m | D = ${v.D} m | ω = ${((2 * Math.PI * v.n) / 60).toFixed(2)} rad/s`,
+        diag: { cls: "ok", msg: `Rapporto cinemat. u/c₁ = ${(u / c1).toFixed(3)} (ottimo teorico = 0.500). Rendimento idraulico = ${(etaid * 100).toFixed(1)}%.` },
+        steps: [
+          {
+            t: "1. Velocità del Getto c₁ e Portata Smaltita Q",
+            f: "c₁ = φ_n · √(2·g·H) ; Q = (π/4)·d²·c₁",
+            s: `c₁ = ${v.phin} · √(2·9.81·${v.H}) = ${c1.toFixed(2)} m/s ; A_g = ${(Aj * 1e4).toFixed(2)} cm²`,
+            r: `c₁ = ${c1.toFixed(2)} m/s | Q = ${Q.toFixed(4)} m³/s (${(Q * 1000).toFixed(1)} l/s)`
+          },
+          {
+            t: "2. Velocità Periferica u e Lavoro Specifico Euleriano L",
+            f: "u = π·D·n / 60 ; L = u·(c₁ - u)·(1 - ψ·cosβ₂)",
+            s: `u = π·${v.D}·${v.n}/60 = ${u.toFixed(2)} m/s ; L = ${u.toFixed(2)}·(${c1.toFixed(2)} - ${u.toFixed(2)})·(1 - ${v.psi}·cos${v.b2}°)`,
+            r: `u = ${u.toFixed(2)} m/s | L = ${(L / 1000).toFixed(2)} kJ/kg`
+          },
+          {
+            t: "3. Rendimento Idraulico η_id e Potenza all'Albero P",
+            f: "η_id = L / (g·H) ; P = ρ · Q · L",
+            s: `η_id = ${L.toFixed(0)} / (9.81·${v.H}) ; P = 1000 · ${Q.toFixed(4)} · ${L.toFixed(0)}`,
+            r: `η_id = ${(etaid * 100).toFixed(2)} % | P = ${P.toFixed(1)} kW`
+          }
+        ]
+      };
+    }
+  },
+  axial: {
+    fields: [
+      { id: "u", label: "Velocità periferica u (m/s)", val: 250 },
+      { id: "ca", label: "Velocità assiale cₐ (m/s)", val: 145 },
+      { id: "a1", label: "Angolo assol. α₁ (°)", val: 18 },
+      { id: "b2", label: "Angolo relat. β₂ (°)", val: 28 }
+    ],
+    solve: (v) => {
+      const a1r = (v.a1 * Math.PI) / 180, b2r = (v.b2 * Math.PI) / 180;
+      const c1u = v.ca * Math.tan(a1r);
+      const w1u = v.u - c1u;
+      const w2u = v.ca * Math.tan(b2r);
+      const c2u = v.u - w2u;
+      const L = v.u * (c2u - c1u);
+      const w1 = Math.sqrt(v.ca * v.ca + w1u * w1u);
+      const w2 = Math.sqrt(v.ca * v.ca + w2u * w2u);
+      const dh = w2 / w1;
+      const chi = (w1u + w2u) / (2 * v.u);
+      const phi = v.ca / v.u;
+      const psi = L / (v.u * v.u);
+      return {
+        si: `u = ${v.u} m/s | cₐ = ${v.ca} m/s | α₁ = ${v.a1}° | β₂ = ${v.b2}° (angoli dalla direzione assiale)`,
+        diag: dh >= 0.72
+          ? { cls: "ok", msg: `Criterio di De Haller rispettato: w₂/w₁ = ${dh.toFixed(3)} ≥ 0.72 (assenza di stallo).` }
+          : { cls: "danger", msg: `RISCHIO STALLO: w₂/w₁ = ${dh.toFixed(3)} < 0.72! Ridurre il carico dello stadio.` },
+        steps: [
+          {
+            t: "1. Ricostruzione Componenti Tangenziali dei Triangoli",
+            f: "c₁ᵤ = cₐ·tanα₁ ; w₁ᵤ = u - c₁ᵤ ; w₂ᵤ = cₐ·tanβ₂ ; c₂ᵤ = u - w₂ᵤ",
+            s: `c₁ᵤ = ${c1u.toFixed(1)} m/s ; w₁ᵤ = ${w1u.toFixed(1)} m/s ; w₂ᵤ = ${w2u.toFixed(1)} m/s ; c₂ᵤ = ${c2u.toFixed(1)} m/s`,
+            r: `Δcᵤ = c₂ᵤ - c₁ᵤ = ${(c2u - c1u).toFixed(1)} m/s`
+          },
+          {
+            t: "2. Lavoro Specifico Euleriano (Compressore) e Parametri Adimensionali",
+            f: "L = u·(c₂ᵤ - c₁ᵤ) ; φ = cₐ/u ; ψ = L/u² ; χ = (w₁ᵤ + w₂ᵤ)/(2u)",
+            s: `L = ${v.u} · ${(c2u - c1u).toFixed(1)} = ${(L / 1000).toFixed(2)} kJ/kg`,
+            r: `L = ${(L / 1000).toFixed(2)} kJ/kg | φ = ${phi.toFixed(3)} | ψ = ${psi.toFixed(3)} | χ = ${chi.toFixed(3)}`
+          },
+          {
+            t: "3. Verifica Aerodinamica di De Haller",
+            f: "w₁ = √(cₐ² + w₁ᵤ²) ; w₂ = √(cₐ² + w₂ᵤ²) ; w₂/w₁ ≥ 0.72",
+            s: `w₁ = ${w1.toFixed(1)} m/s ; w₂ = ${w2.toFixed(1)} m/s`,
+            r: `De Haller w₂/w₁ = ${dh.toFixed(3)}`
+          }
+        ]
+      };
+    }
+  },
+  mci: {
+    fields: [
+      { id: "rho", label: "Rapp. compressione ρ", val: 16.5 },
+      { id: "lam", label: "Rapp. isocoro λ (1=Diesel)", val: 1.40 },
+      { id: "tau", label: "Rapp. isobaro τ (1=Otto)", val: 1.55 },
+      { id: "p1", label: "Pressione p₁ (bar)", val: 1.2 },
+      { id: "T1", label: "Temp. T₁ (°C)", val: 35 },
+      { id: "Vc", label: "Cilindrata tot Vc (cm³)", val: 1995 },
+      { id: "n", label: "Regime n (rpm) 4T", val: 3200 }
+    ],
+    solve: (v, fl) => {
+      const p1Pa = v.p1 * 1e5, T1K = v.T1 + 273.15, Vcm3 = v.Vc * 1e-6;
+      const p2 = v.p1 * Math.pow(v.rho, fl.gamma);
+      const T2 = T1K * Math.pow(v.rho, fl.gamma - 1);
+      const p3 = p2 * v.lam;
+      const T3 = T2 * v.lam * v.tau;
+      const eta = 1 - (1 / Math.pow(v.rho, fl.gamma - 1)) * ((v.lam * Math.pow(v.tau, fl.gamma) - 1) / ((v.lam - 1) + fl.gamma * v.lam * (v.tau - 1)));
+      const q1 = (fl.cv * T2 * (v.lam - 1) + fl.cp * T2 * v.lam * (v.tau - 1)) / 1000;
+      const Lciclo = q1 * eta;
+      const rho1 = p1Pa / (fl.R * T1K);
+      const m_aria = rho1 * Vcm3;
+      const P_ind = m_aria * Lciclo * (v.n / 120);
+      return {
+        si: `p₁ = ${p1Pa.toFixed(0)} Pa | T₁ = ${T1K.toFixed(2)} K | Vc = ${Vcm3.toExponential(3)} m³ | Ciclo 4T → i = n/120`,
+        diag: { cls: "ok", msg: `Ciclo Sabathe generale (per λ=1 diventa Diesel, per τ=1 diventa Otto). Rendimento termico ideale = ${(eta * 100).toFixed(1)}%.` },
+        steps: [
+          {
+            t: "1. Pressione e Temperatura a Fine Compressione (Punto 2) e Picco (Punto 3)",
+            f: "p₂ = p₁·ρ^γ ; T₂ = T₁·ρ^(γ-1) ; p_max = p₂·λ ; T_max = T₂·λ·τ",
+            s: `p₂ = ${p2.toFixed(1)} bar, T₂ = ${T2.toFixed(0)} K`,
+            r: `p_max = ${p3.toFixed(1)} bar | T_max = ${T3.toFixed(0)} K`
+          },
+          {
+            t: "2. Rendimento Termico Ideale Sabathe η_th",
+            f: "η_th = 1 - [1/ρ^(γ-1)] · [(λ·τ^γ - 1) / ((λ - 1) + γ·λ·(τ - 1))]",
+            s: `q₁ = ${q1.toFixed(1)} kJ/kg ; L_ciclo = q₁ · η_th = ${Lciclo.toFixed(1)} kJ/kg`,
+            r: `η_th = ${(eta * 100).toFixed(2)} % | L_ciclo = ${Lciclo.toFixed(1)} kJ/kg`
+          },
+          {
+            t: "3. Potenza Indicata Teorica (Motore 4 Tempi)",
+            f: "m_aria = ρ₁ · Vc ; P_ind = m_aria · L_ciclo · (n / 120)",
+            s: `m_aria = ${(m_aria * 1000).toFixed(3)} g/ciclo ; frequ. cicli = ${(v.n / 120).toFixed(2)} Hz`,
+            r: `P_ind = ${P_ind.toFixed(2)} kW (${(P_ind * 1.3596).toFixed(1)} CV)`
+          }
+        ]
+      };
+    }
+  },
+  simil: {
+    fields: [
+      { id: "Q1", label: "Portata nota Q₁ (m³/h)", val: 150 },
+      { id: "H1", label: "Prevalenza nota H₁ (m)", val: 42 },
+      { id: "P1", label: "Potenza nota P₁ (kW)", val: 24 },
+      { id: "n1", label: "Giri noti n₁ (rpm)", val: 1450 },
+      { id: "n2", label: "Nuovi giri n₂ (rpm)", val: 1750 },
+      { id: "D1", label: "Diametro D₁ (mm)", val: 250 },
+      { id: "D2", label: "Nuovo diametro D₂ (mm)", val: 250 }
+    ],
+    solve: (v) => {
+      const rN = v.n2 / v.n1;
+      const rD = v.D2 / v.D1;
+      const Q2 = v.Q1 * rN * Math.pow(rD, 3);
+      const H2 = v.H1 * Math.pow(rN, 2) * Math.pow(rD, 2);
+      const P2 = v.P1 * Math.pow(rN, 3) * Math.pow(rD, 5);
+      return {
+        si: `Rapporto velocità n₂/n₁ = ${rN.toFixed(4)} | Rapporto geometrico D₂/D₁ = ${rD.toFixed(4)}`,
+        diag: { cls: "warn", msg: `Attenzione alla potenza: cresce con il CUBO dei giri (n₂/n₁)³ = ${Math.pow(rN, 3).toFixed(2)}x e la QUINTA potenza del diametro!` },
+        steps: [
+          {
+            t: "1. Legge di Affinità sulla Portata Q (φ = cost)",
+            f: "Q₂ / Q₁ = (n₂ / n₁) · (D₂ / D₁)³",
+            s: `Q₂ = ${v.Q1} · (${rN.toFixed(3)}) · (${rD.toFixed(3)})³`,
+            r: `Q₂ = ${Q2.toFixed(1)} m³/h (${(Q2 / 3.6).toFixed(2)} l/s)`
+          },
+          {
+            t: "2. Legge di Affinità sulla Prevalenza H (ψ = cost)",
+            f: "H₂ / H₁ = (n₂ / n₁)² · (D₂ / D₁)²",
+            s: `H₂ = ${v.H1} · (${rN.toFixed(3)})² · (${rD.toFixed(3)})²`,
+            r: `H₂ = ${H2.toFixed(2)} m`
+          },
+          {
+            t: "3. Legge di Affinità sulla Potenza Assorbita P",
+            f: "P₂ / P₁ = (n₂ / n₁)³ · (D₂ / D₁)⁵",
+            s: `P₂ = ${v.P1} · (${rN.toFixed(3)})³ · (${rD.toFixed(3)})⁵`,
+            r: `P₂ = ${P2.toFixed(2)} kW`
+          }
+        ]
+      };
     }
   }
 };
 
 function renderSolverInputs() {
-  const key = document.getElementById('solver-type').value;
+  const key = document.getElementById("solver-type").value;
   const schema = SOLVER_SCHEMAS[key];
-  document.getElementById('solver-inputs').innerHTML = schema.fields.map(f => `
+  document.getElementById("solver-inputs").innerHTML = schema.fields.map(f => `
     <div class="field-group">
       <label for="sol-${f.id}">${f.label}</label>
       <input type="number" id="sol-${f.id}" value="${f.val}" step="any">
     </div>
-  `).join('');
-  document.querySelectorAll('#solver-inputs input').forEach(inp => {
-    inp.addEventListener('input', runSolver);
+  `).join("");
+  document.querySelectorAll("#solver-inputs input").forEach(inp => {
+    inp.addEventListener("input", runSolver);
   });
   runSolver();
 }
 
 function runSolver() {
-  const key = document.getElementById('solver-type').value;
+  const key = document.getElementById("solver-type").value;
   const schema = SOLVER_SCHEMAS[key];
   const vals = {};
   schema.fields.forEach(f => {
-    vals[f.id] = parseFloat(document.getElementById('sol-' + f.id).value) || 0;
+    vals[f.id] = parseFloat(document.getElementById("sol-" + f.id).value) || 0;
   });
-  const steps = schema.solve(vals, getFluid());
-  document.getElementById('solver-steps').innerHTML = steps.map(s => `
+  const out = schema.solve(vals, getFluid());
+  document.getElementById("solver-si").innerHTML = `<div class="si-banner"><b>Dati in Unità SI:</b> ${out.si}</div>`;
+  document.getElementById("solver-diag").innerHTML = `<div class="diag-banner ${out.diag.cls}">${out.diag.msg}</div>`;
+  document.getElementById("solver-steps").innerHTML = out.steps.map(s => `
     <div class="step-card">
       <div class="step-title">${s.t}</div>
       <div class="step-formula">${s.f}</div>
+      <div class="step-sub">${s.s}</div>
       <div class="step-res">${s.r}</div>
     </div>
-  `).join('');
+  `).join("");
+}
+
+// ==================== 6: FORMULARIO RAGIONATO D'ESAME ====================
+const FORMULARY_DATA = [
+  {
+    cat: "1. Termodinamica Gas & Ugelli",
+    badge: "Flussi Comprimibili",
+    eqs: [
+      { f: "cₚ = γ·R / (γ - 1)  ;  cᵥ = R / (γ - 1)", d: "Calori specifici a pressione e volume costante [J/(kg·K)]" },
+      { f: "β_cr = [(γ + 1) / 2]^(γ / (γ - 1))", d: "Rapporto critico di pressione (per γ=1.4 → β_cr = 1.893, p*/p₀ = 0.528)" },
+      { f: "c₂ = √[2 · cₚ · (T₀ - T₂,is) · φ²]", d: "Velocità di efflusso reale con coefficiente di velocità φ" },
+      { f: "a = √(γ · R · T)  ;  M = c / a", d: "Velocità del suono locale e Numero di Mach" }
+    ],
+    pitfall: "In un ugello convergente, se p_amb < p*, usare p₂ = p* (e NON p_amb) per calcolare ρ₂, T₂ e c₂!"
+  },
+  {
+    cat: "2. Compressori Volumetrici Alternativi",
+    badge: "Volumetriche",
+    eqs: [
+      { f: "ηᵥ = 1 - μ · (β^(1/m\") - 1)", d: "Rendimento volumetrico con grado di spazio morto μ = Vₙ / Vc" },
+      { f: "β_lim = (1/μ + 1)^m\"", d: "Rapporto limite per cui ηᵥ = 0 (portata aspirata nulla)" },
+      { f: "|L_th| = [m / (m - 1)] · R · T₁ · (β^((m-1)/m) - 1)", d: "Lavoro specifico politropico (per isoterma m=1 → R·T₁·lnβ)" },
+      { f: "β_opt = β^(1/z)  ;  p_int = p₁ · √β (per z=2)", d: "Ripartizione ottima bistadio con interrefrigerazione perfetta" }
+    ],
+    pitfall: "Non confondere la velocità media dello stantuffo cₘ = 2·c·n/60 con la frequenza di aspirazione f = n/60 (semplice effetto)."
+  },
+  {
+    cat: "3. Compressori Rotativi (Roots & Vite/Palette)",
+    badge: "Volumetriche",
+    eqs: [
+      { f: "|L_roots| = (p₂ - p₁) / (ρ₁ · ηᵥ) = [R · T₁ · (β - 1)] / ηᵥ", d: "Ciclo rettangolare a compressione esterna (lavoro iso-volumetrico)" },
+      { f: "βᵢ = ρ^m  (con ρ = V₁ / Vᵢ)", d: "Rapporto interno per compressori a palette o a vite" },
+      { f: "P_ass = (ṁ · |L|) / ηₘ", d: "Potenza meccanica assorbita all'albero [W]" }
+    ],
+    pitfall: "Nei compressori Roots ηᵥ tiene conto dei trafilamenti interni attraverso i giochi tra i lobi e la cassa."
+  },
+  {
+    cat: "4. Equazione di Eulero & Triangoli di Velocità",
+    badge: "Turbomacchine",
+    eqs: [
+      { f: "c̄ = ū + w̄  (Assoluta = Periferica + Relativa)", d: "Relazione vettoriale fondamentale in ogni sezione della girante" },
+      { f: "L_motr = u₁·c₁ᵤ - u₂·c₂ᵤ  ;  L_oper = u₂·c₂ᵤ - u₁·c₁ᵤ", d: "Lavoro specifico Euleriano (positivo in entrambe le convenzioni)" },
+      { f: "χ = Δh_rotore / Δh_stadio = (w₂² - w₁²)/(2L) [motr.]", d: "Grado di reazione: χ=0 azione pura, χ=0.5 stadio simmetrico" }
+    ],
+    pitfall: "Attenzione ai segni di c₂ᵤ! Se c₂ᵤ è opposto a u₂ (come nelle turbine ad azione), u₁·c₁ᵤ - u₂·(-|c₂ᵤ|) somma i contributi."
+  },
+  {
+    cat: "5. Pompe Centrifughe, Impianto & NPSH",
+    badge: "Idraulica",
+    eqs: [
+      { f: "H_imp(Q) = ΔZ + (p_m - p_a)/(ρ·g) + k_imp · Q²", d: "Curva caratteristica esterna dell'impianto [m]" },
+      { f: "NPSH_disp = (p_atm - p_v)/(ρ·g) - Zₐ - Yₐ", d: "Carico netto assoluto disponibile all'aspirazione [m]" },
+      { f: "Condizione anti-cavitazione: NPSH_disp > NPSH_req", d: "Evita l'ebollizione locale all'occhio della girante" },
+      { f: "P_u = ρ · g · Q · H  ;  P_ass = P_u / η_g", d: "Potenza idraulica utile e potenza assorbita [W]" }
+    ],
+    pitfall: "Convertire sempre Q da m³/h a m³/s (dividere per 3600) prima di calcolare P_u o k·Q²!"
+  },
+  {
+    cat: "6. Turbomacchine Operatrici (Centrifughe & Assiali)",
+    badge: "Operatrici",
+    eqs: [
+      { f: "σ = 1 - 0.63 · π / Z  (Stanitz-Stodola)", d: "Fattore di scorrimento per numero finito di pale Z" },
+      { f: "L_eu = u₂² · (σ - φ₂ / tan β₂b)  (con c₁ᵤ = 0)", d: "Lavoro euleriano girante centrifuga con ingresso assiale" },
+      { f: "Criterio di De Haller: w₂ / w₁ ≥ 0.72", d: "Limite di diffusione nel rotore di un compressore assiale" },
+      { f: "φ = cₐ / u  ;  ψ = Δh₀ / u²", d: "Coefficiente di flusso φ e coefficiente di carico ψ" }
+    ],
+    pitfall: "Nelle centrifughe β₂b è misurato rispetto alla direzione tangenziale negativa (pale indietro β₂b < 90°); negli assiali gli angoli sono spesso dalla direzione assiale!"
+  },
+  {
+    cat: "7. Turbine Idrauliche & a Vapore/Gas",
+    badge: "Motrici",
+    eqs: [
+      { f: "Pelton: c₁ = φ_n·√(2gH) ; L = u·(c₁ - u)·(1 - ψ·cosβ₂)", d: "Ottimo teorico per u/c₁ = 0.50 (pratico 0.46–0.48)" },
+      { f: "Azione (De Laval): (u/c₁)_ott = cos(α₁) / 2", d: "Stadio assiale a salto di pressione singolo (χ = 0)" },
+      { f: "Curtis (2 salti vel.): (u/c₁)_ott = cos(α₁) / 4", d: "Smaltisce salto entalpico 4x a parità di velocità periferica u" },
+      { f: "Reazione (χ = 0.5): (u/c₁)_ott = cos(α₁)", d: "Stadio simmetrico (α₁ = β₂, β₁ = α₂)" }
+    ],
+    pitfall: "Nella Pelton β₂ è l'angolo di deviazione totale del getto (~165°–170°), quindi cos(β₂) è negativo e (1 - ψ·cosβ₂) ≈ 1.9."
+  },
+  {
+    cat: "8. Cicli Termodinamici M.C.I. & Similitudine",
+    badge: "Motoristica",
+    eqs: [
+      { f: "η_Otto = 1 - 1 / ρ^(γ - 1)", d: "Rendimento ideale ciclo ad accensione comandata (ρ = V₁/V₂)" },
+      { f: "η_Sabathe = 1 - [1/ρ^(γ-1)]·[(λ·τ^γ - 1)/((λ-1) + γ·λ·(τ-1))]", d: "Ciclo misto (λ = p₃/p₂, τ = V₃\"/V₂). Per λ=1 → Diesel; per τ=1 → Otto" },
+      { f: "P_ind = m_aria · L_ciclo · (n / 60) · ε  (ε=0.5 per 4T, 1 per 2T)", d: "Potenza indicata in funzione del numero di tempi" },
+      { f: "Q₂/Q₁ = (n₂/n₁)(D₂/D₁)³ ; H₂/H₁ = (n₂/n₁)²(D₂/D₁)² ; P₂/P₁ = (n₂/n₁)³(D₂/D₁)⁵", d: "Leggi di affinità / similitudine idraulica" }
+    ],
+    pitfall: "In un motore a 4 tempi si ha 1 ciclo utile ogni 2 giri dell'albero: la frequenza dei cicli è n/120 [Hz], non n/60!"
+  }
+];
+
+function renderFormulary(filterText = "") {
+  const q = filterText.trim().toLowerCase();
+  const filtered = FORMULARY_DATA.filter(item => {
+    if (!q) return true;
+    const blob = (item.cat + " " + item.badge + " " + item.pitfall + " " + item.eqs.map(e => e.f + " " + e.d).join(" ")).toLowerCase();
+    return blob.includes(q);
+  });
+
+  document.getElementById("formulaCountBadge").textContent = `${filtered.length} / ${FORMULARY_DATA.length} Moduli`;
+  document.getElementById("formulaGrid").innerHTML = filtered.map(item => `
+    <div class="f-card">
+      <div class="f-card-head">
+        <h3>${item.cat}</h3>
+        <span class="badge">${item.badge}</span>
+      </div>
+      ${item.eqs.map(e => `
+        <div class="f-eq">
+          ${e.f}
+          <span>${e.d}</span>
+        </div>
+      `).join("")}
+      <div class="f-pitfall"><b>Errore da evitare:</b> ${item.pitfall}</div>
+    </div>
+  `).join("");
 }
 
 function updateAll() {
+  updateFluidDerived();
   updateS1A();
   updateS1B();
   updateS1C();
@@ -2266,71 +3200,85 @@ function updateAll() {
 }
 
 // ==================== EVENT LISTENERS BINDING ====================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   // Global fluid bar
-  document.getElementById('fluidPreset').addEventListener('change', onFluidChange);
-  document.getElementById('globalGamma').addEventListener('input', updateAll);
-  document.getElementById('globalR').addEventListener('input', updateAll);
+  document.getElementById("fluidPreset").addEventListener("change", onFluidChange);
+  document.getElementById("globalGamma").addEventListener("input", updateAll);
+  document.getElementById("globalR").addEventListener("input", updateAll);
+
+  // Converter drawer toggle & inputs
+  document.getElementById("btnToggleConv").addEventListener("click", () => {
+    document.getElementById("converterDrawer").classList.toggle("open");
+  });
+  ["conv-p-val", "conv-p-unit", "conv-q-val", "conv-q-unit", "conv-n-val", "conv-n-unit", "conv-w-val", "conv-w-unit"].forEach(id => {
+    document.getElementById(id).addEventListener("input", updateConverters);
+    document.getElementById(id).addEventListener("change", updateConverters);
+  });
+  updateConverters();
 
   // Main navigation
-  document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => switchSection(btn.dataset.sec, btn));
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.addEventListener("click", () => switchSection(btn.dataset.sec, btn));
   });
 
   // Sub-navigation
-  document.querySelectorAll('.sub-btn').forEach(btn => {
-    btn.addEventListener('click', () => switchSub(btn.dataset.sec, btn.dataset.sub, btn));
+  document.querySelectorAll(".sub-btn").forEach(btn => {
+    btn.addEventListener("click", () => switchSub(btn.dataset.sec, btn.dataset.sub, btn));
   });
 
   // 1A listeners
-  ['s1a-stages', 's1a-real'].forEach(id => document.getElementById(id).addEventListener('change', updateS1A));
-  ['s1a-beta', 's1a-mu', 's1a-mc', 's1a-me', 's1a-vc', 's1a-p1'].forEach(id => document.getElementById(id).addEventListener('input', updateS1A));
-  document.getElementById('btn-reset-s1a').addEventListener('click', resetS1A);
+  ["s1a-stages", "s1a-real"].forEach(id => document.getElementById(id).addEventListener("change", updateS1A));
+  ["s1a-beta", "s1a-mu", "s1a-mc", "s1a-me", "s1a-vc", "s1a-p1"].forEach(id => document.getElementById(id).addEventListener("input", updateS1A));
+  document.getElementById("btn-reset-s1a").addEventListener("click", resetS1A);
 
   // 1B listeners
-  document.getElementById('s1b-type').addEventListener('change', updateS1B);
-  ['s1b-beta', 's1b-rho', 's1b-m', 's1b-etav'].forEach(id => document.getElementById(id).addEventListener('input', updateS1B));
-  document.getElementById('btn-reset-s1b').addEventListener('click', resetS1B);
+  document.getElementById("s1b-type").addEventListener("change", updateS1B);
+  ["s1b-beta", "s1b-rho", "s1b-m", "s1b-etav"].forEach(id => document.getElementById(id).addEventListener("input", updateS1B));
+  document.getElementById("btn-reset-s1b").addEventListener("click", resetS1B);
 
   // 1C listeners
-  ['s1c-dz', 's1c-k', 's1c-za', 's1c-ya', 's1c-temp'].forEach(id => document.getElementById(id).addEventListener('input', updateS1C));
-  document.getElementById('btn-reset-s1c').addEventListener('click', resetS1C);
+  ["s1c-dz", "s1c-k", "s1c-za", "s1c-ya", "s1c-temp"].forEach(id => document.getElementById(id).addEventListener("input", updateS1C));
+  document.getElementById("btn-reset-s1c").addEventListener("click", resetS1C);
 
   // 2A listeners
-  ['s2a-p0', 's2a-t0', 's2a-pamb', 's2a-eta'].forEach(id => document.getElementById(id).addEventListener('input', updateS2A));
-  document.getElementById('btn-reset-s2a').addEventListener('click', resetS2A);
+  ["s2a-p0", "s2a-t0", "s2a-pamb", "s2a-eta"].forEach(id => document.getElementById(id).addEventListener("input", updateS2A));
+  document.getElementById("btn-reset-s2a").addEventListener("click", resetS2A);
 
   // 2B listeners
-  document.getElementById('s2b-type').addEventListener('change', updateS2B);
-  ['s2b-h', 's2b-uc', 's2b-b2', 's2b-psi'].forEach(id => document.getElementById(id).addEventListener('input', updateS2B));
-  document.getElementById('btn-reset-s2b').addEventListener('click', resetS2B);
+  document.getElementById("s2b-type").addEventListener("change", updateS2B);
+  ["s2b-h", "s2b-uc", "s2b-b2", "s2b-psi"].forEach(id => document.getElementById(id).addEventListener("input", updateS2B));
+  document.getElementById("btn-reset-s2b").addEventListener("click", resetS2B);
 
   // 2C listeners
-  document.getElementById('s2c-type').addEventListener('change', updateS2C);
-  ['s2c-a1', 's2c-uc', 's2c-dh'].forEach(id => document.getElementById(id).addEventListener('input', updateS2C));
-  document.getElementById('btn-reset-s2c').addEventListener('click', resetS2C);
+  document.getElementById("s2c-type").addEventListener("change", updateS2C);
+  ["s2c-a1", "s2c-uc", "s2c-dh"].forEach(id => document.getElementById(id).addEventListener("input", updateS2C));
+  document.getElementById("btn-reset-s2c").addEventListener("click", resetS2C);
 
   // 3A listeners
-  ['s3a-b2', 's3a-z', 's3a-u2', 's3a-phi'].forEach(id => document.getElementById(id).addEventListener('input', updateS3A));
-  document.getElementById('btn-reset-s3a').addEventListener('click', resetS3A);
+  ["s3a-b2", "s3a-z", "s3a-u2", "s3a-phi"].forEach(id => document.getElementById(id).addEventListener("input", updateS3A));
+  document.getElementById("btn-reset-s3a").addEventListener("click", resetS3A);
 
   // 3B listeners
-  ['s3b-chi', 's3b-phi', 's3b-psi', 's3b-u'].forEach(id => document.getElementById(id).addEventListener('input', updateS3B));
-  document.getElementById('btn-reset-s3b').addEventListener('click', resetS3B);
+  ["s3b-chi", "s3b-phi", "s3b-psi", "s3b-u"].forEach(id => document.getElementById(id).addEventListener("input", updateS3B));
+  document.getElementById("btn-reset-s3b").addEventListener("click", resetS3B);
 
   // 4A listeners
-  ['s4a-cycle', 's4a-plane'].forEach(id => document.getElementById(id).addEventListener('change', updateS4A));
-  ['s4a-rho', 's4a-q1', 's4a-lam', 's4a-p1'].forEach(id => document.getElementById(id).addEventListener('input', updateS4A));
-  document.getElementById('btn-reset-s4a').addEventListener('click', resetS4A);
+  ["s4a-cycle", "s4a-plane"].forEach(id => document.getElementById(id).addEventListener("change", updateS4A));
+  ["s4a-rho", "s4a-q1", "s4a-lam", "s4a-p1"].forEach(id => document.getElementById(id).addEventListener("input", updateS4A));
+  document.getElementById("btn-reset-s4a").addEventListener("click", resetS4A);
 
   // 5 Solver
-  document.getElementById('solver-type').addEventListener('change', renderSolverInputs);
+  document.getElementById("solver-type").addEventListener("change", renderSolverInputs);
+
+  // 6 Formulary
+  document.getElementById("formulaSearch").addEventListener("input", e => renderFormulary(e.target.value));
+  renderFormulary();
 
   renderSolverInputs();
   updateAll();
 });
 
-window.addEventListener('resize', updateAll);
+window.addEventListener("resize", updateAll);
 </script>
 </body>
 </html>
