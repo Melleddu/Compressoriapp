@@ -1,0 +1,1632 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>CompressoLab • Analisi P-V Macchine a Fluido</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#162032',
+                            925: '#0b1120',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Personalizzazione scrollbar e input range per feeling ingegneristico */
+        body {
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: none;
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 6px;
+            border-radius: 999px;
+        }
+        .dark input[type="range"]::-webkit-slider-runnable-track {
+            background: #334155;
+        }
+        html:not(.dark) input[type="range"]::-webkit-slider-runnable-track {
+            background: #cbd5e1;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #0ea5e9;
+            border: 2px solid #ffffff;
+            margin-top: -7px;
+            box-shadow: 0 2px 6px rgba(14, 165, 233, 0.45);
+            transition: transform 0.1s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:active {
+            transform: scale(1.18);
+            background: #0284c7;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-925 dark:text-slate-100 font-sans antialiased selection:bg-sky-500/30">
+
+    <!-- HEADER STICKY -->
+    <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-3 py-2.5">
+        <div class="max-w-5xl mx-auto flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-sky-500/20 shrink-0">
+                    <!-- Icona SVG Diagramma P-V -->
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M7 15c2-6 5-9 11-9M7 15h11v4H7z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-extrabold tracking-tight leading-none flex items-center gap-1.5">
+                        CompressoLab
+                        <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-sky-500/15 text-sky-600 dark:text-sky-400 font-semibold">P-V Studio</span>
+                    </h1>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Macchine a Fluido • Termodinamica Applicata</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-1.5">
+                <!-- Selettore Fluido Rapido -->
+                <select id="fluidSelect" aria-label="Fluido di lavoro" class="text-xs font-medium bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    <option value="air">Aria (k=1.40)</option>
+                    <option value="methane">Metano CH₄ (k=1.31)</option>
+                    <option value="co2">CO₂ (k=1.29)</option>
+                    <option value="helium">Elio He (k=1.66)</option>
+                    <option value="custom">Custom Gas...</option>
+                </select>
+
+                <!-- Toggle Tema Chiaro/Scuro -->
+                <button id="themeToggle" title="Cambia tema" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    <svg id="iconSun" class="w-4 h-4 hidden dark:block text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                    <svg id="iconMoon" class="w-4 h-4 block dark:hidden text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Barra Custom Gas (visibile solo se selezionato 'custom') -->
+        <div id="customFluidBar" class="hidden max-w-5xl mx-auto mt-2 pt-2 border-t border-slate-200 dark:border-slate-800 grid grid-cols-2 gap-2 text-xs">
+            <label class="flex items-center justify-between bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">
+                <span class="text-slate-500 dark:text-slate-400">Esponente k (cₚ/cᵥ):</span>
+                <input type="number" id="customK" value="1.40" step="0.01" min="1.05" max="1.70" class="w-16 text-right font-mono font-semibold bg-transparent focus:outline-none text-sky-500">
+            </label>
+            <label class="flex items-center justify-between bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">
+                <span class="text-slate-500 dark:text-slate-400">Costante R [J/kgK]:</span>
+                <input type="number" id="customR" value="287" step="1" min="50" max="4500" class="w-16 text-right font-mono font-semibold bg-transparent focus:outline-none text-sky-500">
+            </label>
+        </div>
+    </header>
+
+    <!-- NAVIGAZIONE TIPOLOGIE COMPRESSORI (Scrollabile orizzontalmente su mobile) -->
+    <nav class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-[57px] z-20">
+        <div class="max-w-5xl mx-auto flex overflow-x-auto no-scrollbar px-2 py-1.5 gap-1.5" role="tablist">
+            <button data-tab="reciprocating" class="tab-btn active shrink-0 px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 bg-sky-500 text-white shadow-sm">
+                <span>1. Alternativo Monostadio</span>
+            </button>
+            <button data-tab="multistage" class="tab-btn shrink-0 px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                <span>2. Pluristadio Interrefrig.</span>
+            </button>
+            <button data-tab="rotary" class="tab-btn shrink-0 px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                <span>3. Rotativi (Vite / Roots)</span>
+            </button>
+            <button data-tab="dynamic" class="tab-btn shrink-0 px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+                <span>4. Dinamici (Turbocompr.)</span>
+            </button>
+            <button data-tab="exam" class="tab-btn shrink-0 px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20">
+                <span>📐 Verifica Esercizi</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-5xl mx-auto p-3 sm:p-4 space-y-4 pb-20">
+
+        <!-- SEZIONE SIMULATORE INTERATTIVO (Visibile per Tab 1, 2, 3, 4) -->
+        <div id="simulatorSection" class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+
+            <!-- COLONNA SINISTRA / SUPERIORE: CANVAS DIAGRAMMA P-V + LEGENDA -->
+            <div class="lg:col-span-7 space-y-3">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                    <!-- Top bar del grafico -->
+                    <div class="px-3.5 py-2.5 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                            <h2 id="chartTitle" class="text-sm font-bold text-slate-800 dark:text-slate-100">Ciclo Indicato (p, V) - Alternativo</h2>
+                            <p id="chartSubtitle" class="text-[11px] text-slate-500 dark:text-slate-400">Trasformazioni: 4→1 Asp. | 1→2 Comp. | 2→3 Mand. | 3→4 Esp.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <!-- Controllo specifico rapido (es. Ciclo Reale Toggle) -->
+                            <label id="realCycleToggleWrap" class="inline-flex items-center gap-1.5 cursor-pointer bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700">
+                                <input type="checkbox" id="toggleRealCycle" class="rounded text-sky-500 focus:ring-0 w-3.5 h-3.5">
+                                <span class="text-[11px] font-semibold">Ciclo Reale (Valvole)</span>
+                            </label>
+                            <!-- Controllo sub-tipo Rotativo -->
+                            <select id="rotarySubtype" class="hidden text-xs font-semibold bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1">
+                                <option value="screw">Vite / Palette (Comp. Interna)</option>
+                                <option value="roots">Lobi Roots (Comp. Esterna Isocora)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Contenitore Canvas Responsivo -->
+                    <div class="relative w-full aspect-[4/3] sm:aspect-[16/11] bg-slate-50/50 dark:bg-slate-950/60 p-1">
+                        <canvas id="pvCanvas" class="w-full h-full block touch-pan-y"></canvas>
+                        <!-- Badge informativo flottante al tocco/hover -->
+                        <div id="canvasTooltip" class="hidden pointer-events-none absolute top-3 right-3 bg-slate-900/90 text-white text-[11px] font-mono px-2.5 py-1.5 rounded-lg border border-slate-700 shadow-lg"></div>
+                    </div>
+
+                    <!-- Legenda Dinamica -->
+                    <div id="chartLegend" class="px-3.5 py-2 bg-slate-50 dark:bg-slate-850 border-t border-slate-100 dark:border-slate-800 flex flex-wrap gap-x-4 gap-y-1.5 text-[11px]">
+                        <!-- Popolato via JS -->
+                    </div>
+                </div>
+
+                <!-- CARD KPI / RISULTATI TERMODINAMICI IN TEMPO REALE -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5" id="kpiGrid">
+                    <!-- Popolato dinamicamente via JS -->
+                </div>
+
+                <!-- BOX FORMULE E NOTE TEORICHE CONTESTUALI -->
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3.5 shadow-sm">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                            Relazioni Analitiche & Fenomenologia
+                        </h3>
+                        <span id="regimeBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-semibold">Politropica n &lt; k</span>
+                    </div>
+                    <div id="theoryBox" class="text-xs text-slate-600 dark:text-slate-300 space-y-2 leading-relaxed">
+                        <!-- Popolato via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLONNA DESTRA / INFERIORE: PANNELLO CONTROLLI INTERATTIVI -->
+            <div class="lg:col-span-5 space-y-3">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3.5 shadow-sm space-y-3.5">
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Parametri di Funzionamento</h3>
+                        <button id="resetParamsBtn" class="text-[11px] font-semibold text-sky-600 dark:text-sky-400 hover:underline">Ripristina Default</button>
+                    </div>
+
+                    <!-- Gruppo 1: Condizioni Termodinamiche (Sempre visibili) -->
+                    <div class="space-y-3">
+                        <!-- Rapporto di compressione beta -->
+                        <div class="param-control">
+                            <div class="flex justify-between items-center text-xs mb-1">
+                                <label for="sliderBeta" class="font-semibold">Rapporto di compressione <span class="font-mono text-sky-500">β = p₂/p₁</span></label>
+                                <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700">
+                                    <input type="number" id="inputBeta" value="6.0" step="0.1" min="1.2" max="25" class="w-12 text-right font-mono font-bold text-xs bg-transparent focus:outline-none">
+                                    <span class="text-[10px] text-slate-400">[-]</span>
+                                </div>
+                            </div>
+                            <input type="range" id="sliderBeta" min="1.2" max="25" step="0.1" value="6.0" class="w-full">
+                        </div>
+
+                        <!-- Esponente Politropica n (o Rendimento Politropico per Dinamici) -->
+                        <div class="param-control" id="controlPolytropic">
+                            <div class="flex justify-between items-center text-xs mb-1">
+                                <label for="sliderN" class="font-semibold">Esponente politropica <span class="font-mono text-sky-500">n</span></label>
+                                <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700">
+                                    <input type="number" id="inputN" value="1.30" step="0.01" min="1.00" max="1.65" class="w-12 text-right font-mono font-bold text-xs bg-transparent focus:outline-none">
+                                    <span class="text-[10px] text-slate-400">[-]</span>
+                                </div>
+                            </div>
+                            <input type="range" id="sliderN" min="1.00" max="1.65" step="0.01" value="1.30" class="w-full">
+                            <div class="flex justify-between text-[10px] text-slate-400 mt-0.5 font-mono">
+                                <span>1.0 (Isoterma)</span>
+                                <span id="kRefLabel">k = 1.40 (Adiab.)</span>
+                                <span>1.65 (Dissip.)</span>
+                            </div>
+                        </div>
+
+                        <!-- Rendimento Politropico (Solo per Tab 4: Dinamici) -->
+                        <div class="param-control hidden" id="controlEtaP">
+                            <div class="flex justify-between items-center text-xs mb-1">
+                                <label for="sliderEtaP" class="font-semibold">Rendimento politropico <span class="font-mono text-sky-500">ηₚ</span></label>
+                                <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700">
+                                    <input type="number" id="inputEtaP" value="0.82" step="0.01" min="0.50" max="0.98" class="w-12 text-right font-mono font-bold text-xs bg-transparent focus:outline-none">
+                                    <span class="text-[10px] text-slate-400">[-]</span>
+                                </div>
+                            </div>
+                            <input type="range" id="sliderEtaP" min="0.50" max="0.98" step="0.01" value="0.82" class="w-full">
+                        </div>
+
+                        <!-- Pressione p1 e Temperatura T1 -->
+                        <div class="grid grid-cols-2 gap-2.5 pt-1">
+                            <div class="bg-slate-50 dark:bg-slate-850 p-2 rounded-xl border border-slate-200/70 dark:border-slate-800">
+                                <div class="flex justify-between text-[11px] mb-1">
+                                    <span class="text-slate-500 dark:text-slate-400 font-medium">Pressione p₁</span>
+                                    <span class="font-mono font-bold text-sky-500"><span id="valP1">1.0</span> bar</span>
+                                </div>
+                                <input type="range" id="sliderP1" min="0.5" max="10" step="0.1" value="1.0" class="w-full">
+                            </div>
+                            <div class="bg-slate-50 dark:bg-slate-850 p-2 rounded-xl border border-slate-200/70 dark:border-slate-800">
+                                <div class="flex justify-between text-[11px] mb-1">
+                                    <span class="text-slate-500 dark:text-slate-400 font-medium">Temp. T₁</span>
+                                    <span class="font-mono font-bold text-sky-500"><span id="valT1">20</span> °C</span>
+                                </div>
+                                <input type="range" id="sliderT1" min="-10" max="80" step="1" value="20" class="w-full">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gruppo 2: Parametri Specifici per Tipologia -->
+                    <div class="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3">
+                        
+                        <!-- Coefficiente volume nocivo mu (Tab 1 & Tab 2) -->
+                        <div class="param-control" id="controlMu">
+                            <div class="flex justify-between items-center text-xs mb-1">
+                                <label for="sliderMu" class="font-semibold">Coeff. volume nocivo <span class="font-mono text-amber-500">μ = V₀/Vc</span></label>
+                                <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700">
+                                    <input type="number" id="inputMu" value="0.06" step="0.01" min="0.00" max="0.25" class="w-12 text-right font-mono font-bold text-xs bg-transparent focus:outline-none">
+                                    <span class="text-[10px] text-slate-400">[-]</span>
+                                </div>
+                            </div>
+                            <input type="range" id="sliderMu" min="0.00" max="0.25" step="0.01" value="0.06" class="w-full">
+                        </div>
+
+                        <!-- Numero di Stadi z (Solo Tab 2: Pluristadio) -->
+                        <div class="param-control hidden" id="controlStages">
+                            <div class="flex justify-between items-center text-xs mb-1.5">
+                                <span class="font-semibold">Numero di stadi <span class="font-mono text-emerald-500">z</span> (Interrefrig. a T₁)</span>
+                                <div class="inline-flex rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5 border border-slate-200 dark:border-slate-700">
+                                    <button type="button" data-z="2" class="z-btn px-3 py-1 rounded-md text-xs font-bold bg-sky-500 text-white">2 Stadi</button>
+                                    <button type="button" data-z="3" class="z-btn px-3 py-1 rounded-md text-xs font-bold text-slate-600 dark:text-slate-300">3 Stadi</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rapporto compressione interna beta_i (Solo Tab 3: Rotativo Vite) -->
+                        <div class="param-control hidden" id="controlBetaInternal">
+                            <div class="flex justify-between items-center text-xs mb-1">
+                                <label for="sliderBetaInt" class="font-semibold">Rapporto interno built-in <span class="font-mono text-purple-500">βᵢ = pᵢ/p₁</span></label>
+                                <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700">
+                                    <input type="number" id="inputBetaInt" value="6.0" step="0.1" min="1.5" max="18" class="w-12 text-right font-mono font-bold text-xs bg-transparent focus:outline-none">
+                                    <span class="text-[10px] text-slate-400">[-]</span>
+                                </div>
+                            </div>
+                            <input type="range" id="sliderBetaInt" min="1.5" max="18" step="0.1" value="6.0" class="w-full">
+                            <p class="text-[10px] text-slate-400 mt-0.5">Confronta βᵢ con β di linea: se βᵢ &gt; β si ha sovracompressione; se βᵢ &lt; β sottocompressione.</p>
+                        </div>
+
+                        <!-- Dati Geometrici e Velocità (Cilindrata Vc e Giri N) -->
+                        <div class="grid grid-cols-2 gap-2.5" id="geometryInputs">
+                            <div class="bg-slate-50 dark:bg-slate-850 p-2 rounded-xl border border-slate-200/70 dark:border-slate-800">
+                                <label class="block text-[10px] text-slate-500 dark:text-slate-400 font-medium mb-0.5">Cilindrata Vc [cm³]</label>
+                                <input type="number" id="inputVc" value="500" min="10" max="50000" step="10" class="w-full font-mono font-bold text-xs bg-transparent focus:outline-none text-slate-800 dark:text-slate-100">
+                            </div>
+                            <div class="bg-slate-50 dark:bg-slate-850 p-2 rounded-xl border border-slate-200/70 dark:border-slate-800">
+                                <label class="block text-[10px] text-slate-500 dark:text-slate-400 font-medium mb-0.5">Regime N [giri/min]</label>
+                                <input type="number" id="inputRpm" value="1500" min="100" max="100000" step="50" class="w-full font-mono font-bold text-xs bg-transparent focus:outline-none text-slate-800 dark:text-slate-100">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEZIONE 5: VERIFICA ESERCIZI & FORMULARIO PASSO-PASSO -->
+        <div id="examSection" class="hidden space-y-4">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div>
+                        <h2 class="text-base font-bold flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-500 flex items-center justify-center text-xs">📐</span>
+                            Risolutore & Verifica Esercizi d'Esame
+                        </h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Inserisci i dati del problema di Macchine a Fluido per ottenere formule, sostituzioni e risultati.</p>
+                    </div>
+                    <select id="examTypeSelect" class="text-xs font-semibold bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2">
+                        <option value="alt_mono">Compressore Alternativo Monostadio</option>
+                        <option value="alt_multi">Compressore Pluristadio Interrefrigerato</option>
+                        <option value="turbo">Turbocompressore (Assiale / Centrifugo)</option>
+                    </select>
+                </div>
+
+                <!-- Form Dati Esercizio -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
+                    <div class="bg-slate-50 dark:bg-slate-850 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <label class="block text-[11px] text-slate-500 mb-1">Pressione p₁ [bar]</label>
+                        <input type="number" id="exP1" value="1.0" step="0.1" class="w-full font-mono font-bold text-sm bg-transparent focus:outline-none">
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-850 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <label class="block text-[11px] text-slate-500 mb-1">Pressione p₂ [bar]</label>
+                        <input type="number" id="exP2" value="8.0" step="0.1" class="w-full font-mono font-bold text-sm bg-transparent focus:outline-none">
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-850 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <label class="block text-[11px] text-slate-500 mb-1">Temperatura T₁ [°C]</label>
+                        <input type="number" id="exT1" value="20" step="1" class="w-full font-mono font-bold text-sm bg-transparent focus:outline-none">
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-850 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <label class="block text-[11px] text-slate-500 mb-1">Esponente n (o η_is)</label>
+                        <input type="number" id="exParam" value="1.32" step="0.01" class="w-full font-mono font-bold text-sm bg-transparent focus:outline-none">
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-850 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <label class="block text-[11px] text-slate-500 mb-1">Vol. nocivo μ [-]</label>
+                        <input type="number" id="exMu" value="0.05" step="0.01" class="w-full font-mono font-bold text-sm bg-transparent focus:outline-none">
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-850 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <label class="block text-[11px] text-slate-500 mb-1">Cilindrata Vc [cm³]</label>
+                        <input type="number" id="exVc" value="600" step="10" class="w-full font-mono font-bold text-sm bg-transparent focus:outline-none">
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-850 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <label class="block text-[11px] text-slate-500 mb-1">Giri N [rpm] / Portata [kg/s]</label>
+                        <input type="number" id="exN" value="1200" step="10" class="w-full font-mono font-bold text-sm bg-transparent focus:outline-none">
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-850 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <label class="block text-[11px] text-slate-500 mb-1">N° Stadi z (se plurist.)</label>
+                        <input type="number" id="exZ" value="2" min="2" max="5" step="1" class="w-full font-mono font-bold text-sm bg-transparent focus:outline-none">
+                    </div>
+                </div>
+
+                <button id="solveExamBtn" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-bold text-xs shadow-md shadow-sky-500/20 hover:opacity-95 transition">
+                    Calcola Svolgimento Completo
+                </button>
+
+                <!-- Output Passaggi Analitici -->
+                <div id="examStepsOutput" class="mt-4 space-y-2.5">
+                    <!-- Popolato via JS -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        /**
+         * ============================================================================
+         * COMPRESSOLAB - MOTORE TERMODINAMICO & GRAFICO P-V (MACCHINE A FLUIDO)
+         * ============================================================================
+         */
+
+        // Database Fluidi Ideali
+        const FLUIDS = {
+            air:     { name: 'Aria', k: 1.40, R: 287.0 },
+            methane: { name: 'Metano (CH₄)', k: 1.31, R: 518.3 },
+            co2:     { name: 'Anidride Carbonica (CO₂)', k: 1.29, R: 188.9 },
+            helium:  { name: 'Elio (He)', k: 1.66, R: 2077.0 },
+            custom:  { name: 'Gas Custom', k: 1.40, R: 287.0 }
+        };
+
+        // Stato Globale dell'Applicazione
+        const state = {
+            activeTab: 'reciprocating', // 'reciprocating' | 'multistage' | 'rotary' | 'dynamic' | 'exam'
+            fluidKey: 'air',
+            k: 1.40,
+            R: 287.0,
+            p1_bar: 1.0,      // bar
+            T1_C: 20,         // °C
+            beta: 6.0,        // p2 / p1
+            n: 1.30,          // esponente politropica
+            eta_p: 0.82,      // rendimento politropico (turbocompressori)
+            mu: 0.06,         // coefficiente volume nocivo V0 / Vc
+            z: 2,             // numero stadi pluristadio
+            realCycle: false, // perdite valvole ciclo alternativo
+            rotaryType: 'screw', // 'screw' | 'roots'
+            beta_i: 6.0,      // rapporto compressione interno (vite)
+            Vc_cm3: 500,      // cilindrata in cm^3
+            rpm: 1500         // giri/min
+        };
+
+        // Riferimenti DOM
+        const canvas = document.getElementById('pvCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Formattatori numerici
+        const fmt = (val, dec = 2) => Number.isFinite(val) ? val.toFixed(dec) : '—';
+
+        /**
+         * Aggiorna i parametri del fluido selezionato
+         */
+        function updateFluid() {
+            const key = document.getElementById('fluidSelect').value;
+            state.fluidKey = key;
+            const customBar = document.getElementById('customFluidBar');
+            if (key === 'custom') {
+                customBar.classList.remove('hidden');
+                state.k = parseFloat(document.getElementById('customK').value) || 1.40;
+                state.R = parseFloat(document.getElementById('customR').value) || 287.0;
+            } else {
+                customBar.classList.add('hidden');
+                state.k = FLUIDS[key].k;
+                state.R = FLUIDS[key].R;
+            }
+            document.getElementById('kRefLabel').textContent = `k = ${fmt(state.k, 2)} (Adiab.)`;
+            updateApp();
+        }
+
+        /**
+         * Calcoli Termodinamici Core per ciascuna tipologia
+         */
+        function computeThermodynamics() {
+            const p1 = state.p1_bar * 1e5; // Pa
+            const p2 = p1 * state.beta;    // Pa
+            const T1 = state.T1_C + 273.15; // K
+            const k = state.k;
+            const R = state.R;
+            const cp = (k * R) / (k - 1);
+            const v1 = (R * T1) / p1;      // m^3/kg (volume specifico aspirazione)
+            const rho1 = 1 / v1;           // kg/m^3
+            const Vc = state.Vc_cm3 * 1e-6; // m^3
+            const V0 = state.mu * Vc;       // m^3
+            const V1 = Vc + V0;             // m^3 (volume totale al PMI)
+
+            // 1. VOLUMETRICO ALTERNATIVO MONOSTADIO
+            if (state.activeTab === 'reciprocating') {
+                const n = state.n;
+                // Rendimento volumetrico teorico: eta_v = 1 - mu * (beta^(1/n) - 1)
+                let eta_v_th = 1 - state.mu * (Math.pow(state.beta, 1 / n) - 1);
+                eta_v_th = Math.max(0, eta_v_th);
+
+                // Se ciclo reale attivo, includiamo caduta di pressione aspirazione (dp_asp ~ 5%) e mandata (dp_mand ~ 7%) + riscaldamento pareti
+                const dp_asp = state.realCycle ? 0.05 * p1 : 0;
+                const dp_mand = state.realCycle ? 0.07 * p2 : 0;
+                const p1_eff = p1 - dp_asp;
+                const p2_eff = p2 + dp_mand;
+                const beta_eff = p2_eff / p1_eff;
+
+                let eta_v = state.realCycle
+                    ? Math.max(0, (p1_eff / p1) * (1 - state.mu * (Math.pow(beta_eff, 1 / n) - 1)) * 0.96)
+                    : eta_v_th;
+
+                // Temperatura fine compressione T2 = T1 * beta^((n-1)/n)
+                const T2 = T1 * Math.pow(beta_eff, (n - 1) / n);
+
+                // Lavoro indicato specifico (per unità di massa elaborata) [J/kg]
+                // L_spec = (n / (n - 1)) * R * T1 * (beta^((n-1)/n) - 1) (se n -> 1: R*T1*ln(beta))
+                let L_spec;
+                if (Math.abs(n - 1.0) < 0.005) {
+                    L_spec = R * T1 * Math.log(beta_eff);
+                } else {
+                    L_spec = (n / (n - 1)) * R * T1 * (Math.pow(beta_eff, (n - 1) / n) - 1);
+                }
+                // Extra lavoro per perdite alle valvole nel ciclo reale
+                if (state.realCycle) L_spec *= 1.08;
+
+                // Lavoro indicato per singolo ciclo [J]
+                // L_ciclo = L_spec * m_elaborata = L_spec * (rho1 * Vc * eta_v)
+                const m_ciclo = rho1 * Vc * eta_v;
+                const L_ciclo = L_spec * m_ciclo;
+
+                // Portata massica [kg/s] e Potenza indicata [kW] (compressore a semplice effetto: 1 ciclo/giro)
+                const freq = state.rpm / 60;
+                const m_dot = m_ciclo * freq;
+                const P_ind_kW = (L_ciclo * freq) / 1000;
+
+                return {
+                    p1, p2, p1_eff, p2_eff, T1, T2, V0, Vc, V1, n, beta_eff,
+                    eta_v, eta_v_th, L_spec, L_ciclo, m_dot, P_ind_kW
+                };
+            }
+
+            // 2. VOLUMETRICO PLURISTADIO INTERREFRIGERATO
+            if (state.activeTab === 'multistage') {
+                const z = state.z;
+                const n = state.n;
+                // Rapporto di compressione ottimale per stadio: beta_opt = beta^(1/z)
+                const beta_opt = Math.pow(state.beta, 1 / z);
+                const p_int1 = p1 * beta_opt;
+                const p_int2 = z === 3 ? p1 * Math.pow(beta_opt, 2) : null;
+
+                // Temperatura massima raggiunta in ogni stadio (con interrefrigerazione perfetta a T1)
+                const T_stage_out = T1 * Math.pow(beta_opt, (n - 1) / n);
+                const T2_mono = T1 * Math.pow(state.beta, (n - 1) / n);
+
+                // Lavoro specifico totale pluristadio [J/kg]
+                let L_multi, L_mono, L_iso;
+                if (Math.abs(n - 1.0) < 0.005) {
+                    L_multi = R * T1 * Math.log(state.beta);
+                    L_mono = L_multi;
+                } else {
+                    L_multi = z * (n / (n - 1)) * R * T1 * (Math.pow(beta_opt, (n - 1) / n) - 1);
+                    L_mono = (n / (n - 1)) * R * T1 * (Math.pow(state.beta, (n - 1) / n) - 1);
+                }
+                L_iso = R * T1 * Math.log(state.beta);
+
+                const workSavedPct = ((L_mono - L_multi) / L_mono) * 100;
+
+                // Rendimento volumetrico del 1° stadio (determina la portata dell'intera macchina)
+                const eta_v1 = Math.max(0, 1 - state.mu * (Math.pow(beta_opt, 1 / n) - 1));
+                const eta_v_mono = Math.max(0, 1 - state.mu * (Math.pow(state.beta, 1 / n) - 1));
+
+                return {
+                    p1, p2, p_int1, p_int2, T1, T_stage_out, T2_mono,
+                    V0, Vc, V1, z, n, beta_opt, L_multi, L_mono, L_iso,
+                    workSavedPct, eta_v1, eta_v_mono
+                };
+            }
+
+            // 3. VOLUMETRICO ROTATIVO (VITE/PALETTE vs LOBI ROOTS)
+            if (state.activeTab === 'rotary') {
+                const n = state.n;
+                // Volume camera di lavoro V1 (senza volume nocivo geometrico significativo)
+                const V1_rot = Vc;
+                // Lavoro ideale politropico (riferimento)
+                const L_poly = Math.abs(n - 1) < 0.005
+                    ? R * T1 * Math.log(state.beta)
+                    : (n / (n - 1)) * R * T1 * (Math.pow(state.beta, (n - 1) / n) - 1);
+
+                // Lavoro isoentropico di riferimento
+                const L_is = (k / (k - 1)) * R * T1 * (Math.pow(state.beta, (k - 1) / k) - 1);
+
+                if (state.rotaryType === 'roots') {
+                    // Compressore a Lobi Roots: compressione isocora esterna (ciclo rettangolare)
+                    // Lavoro specifico = v1 * (p2 - p1) = R * T1 * (beta - 1)
+                    const L_roots = R * T1 * (state.beta - 1);
+                    const eta_is_roots = L_is / L_roots;
+                    const T2_roots = T1 + L_roots / cp;
+                    return {
+                        type: 'roots', p1, p2, V1_rot, T1, T2: T2_roots,
+                        L_actual: L_roots, L_is, L_poly, eta_is: eta_is_roots
+                    };
+                } else {
+                    // Compressore a Vite / Palette: compressione interna fino a beta_i = p_i / p1
+                    const bi = state.beta_i;
+                    const pi = p1 * bi;
+                    const Vi = V1_rot * Math.pow(1 / bi, 1 / n);
+                    // Lavoro = compressione interna fino a p_i + lavoro isocoro residuo fino a p2
+                    const L_int = Math.abs(n - 1) < 0.005
+                        ? R * T1 * Math.log(bi)
+                        : (n / (n - 1)) * R * T1 * (Math.pow(bi, (n - 1) / n) - 1);
+                    // Termine di sovra/sottocompressione: v_i * (p2 - p_i)
+                    const vi = v1 * Math.pow(1 / bi, 1 / n);
+                    const L_mismatch = vi * (p2 - pi);
+                    const L_screw = L_int + L_mismatch;
+                    const eta_is_screw = Math.min(0.95, L_is / L_screw);
+                    const T2_screw = T1 + L_screw / cp;
+
+                    return {
+                        type: 'screw', p1, p2, pi, bi, V1_rot, Vi, n, T1, T2: T2_screw,
+                        L_actual: L_screw, L_is, L_poly, eta_is: eta_is_screw
+                    };
+                }
+            }
+
+            // 4. DINAMICO / TURBOCOMPRESSORE (Centrifugo / Assiale) sul piano (p, v)
+            if (state.activeTab === 'dynamic') {
+                const eta_p = state.eta_p;
+                // Relazione fondamentale turbomacchine: (n - 1)/n = (k - 1)/(k * eta_p)
+                const exp_poly = (k - 1) / (k * eta_p);
+                const n_real = 1 / (1 - exp_poly);
+
+                // Volumi specifici [m^3/kg] a pressione p2
+                const v2_iso = v1 / state.beta;
+                const v2_is  = v1 * Math.pow(1 / state.beta, 1 / k);
+                const v2_real = v1 * Math.pow(1 / state.beta, 1 / n_real);
+
+                // Temperature di mandata [K]
+                const T2_is = T1 * Math.pow(state.beta, (k - 1) / k);
+                const T2_real = T1 * Math.pow(state.beta, exp_poly);
+
+                // Lavori tecnici (integrale di v dp) [J/kg]
+                const L_iso = R * T1 * Math.log(state.beta);
+                const L_is = cp * (T2_is - T1);
+                const L_real = cp * (T2_real - T1);
+
+                // Rendimento isoentropico: eta_is = (beta^((k-1)/k) - 1) / (beta^((k-1)/(k*eta_p)) - 1)
+                const eta_is = L_is / L_real;
+
+                return {
+                    p1, p2, T1, T2_is, T2_real, v1, v2_iso, v2_is, v2_real,
+                    k, n_real, eta_p, eta_is, L_iso, L_is, L_real
+                };
+            }
+        }
+
+        /**
+         * MOTORE DI DISEGNO CANVAS AD ALTA RISOLUZIONE (DPR-AWARE)
+         */
+        function drawDiagram(data) {
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+
+            const W = rect.width;
+            const H = rect.height;
+            const isDark = document.documentElement.classList.contains('dark');
+
+            // Colori tema
+            const cBg = isDark ? '#090e1a' : '#ffffff';
+            const cGrid = isDark ? 'rgba(148, 163, 184, 0.12)' : 'rgba(100, 116, 139, 0.14)';
+            const cAxis = isDark ? '#64748b' : '#475569';
+            const cText = isDark ? '#cbd5e1' : '#334155';
+            const cMuted = isDark ? '#64748b' : '#94a3b8';
+
+            ctx.fillStyle = cBg;
+            ctx.fillRect(0, 0, W, H);
+
+            // Margini area grafico
+            const pad = { top: 24, right: 24, bottom: 38, left: 50 };
+            const plotW = W - pad.left - pad.right;
+            const plotH = H - pad.top - pad.bottom;
+
+            // Helper trasformazione coordinate
+            let maxX, maxY, minX = 0, minY = 0;
+
+            if (state.activeTab === 'reciprocating') {
+                maxX = data.V1 * 1.12;
+                maxY = (state.realCycle ? data.p2_eff : data.p2) * 1.18;
+            } else if (state.activeTab === 'multistage') {
+                maxX = data.V1 * 1.12;
+                maxY = data.p2 * 1.15;
+            } else if (state.activeTab === 'rotary') {
+                maxX = data.V1_rot * 1.15;
+                maxY = Math.max(data.p2, data.pi || 0) * 1.18;
+            } else if (state.activeTab === 'dynamic') {
+                maxX = data.v1 * 1.12;
+                maxY = data.p2 * 1.15;
+            }
+
+            const toX = (val) => pad.left + ((val - minX) / (maxX - minX)) * plotW;
+            const toY = (val) => pad.top + plotH - ((val - minY) / (maxY - minY)) * plotH;
+
+            // Griglia e Assi
+            ctx.strokeStyle = cGrid;
+            ctx.lineWidth = 1;
+            const stepsX = 5, stepsY = 5;
+            ctx.font = '10px "JetBrains Mono", monospace';
+            ctx.fillStyle = cMuted;
+
+            for (let i = 0; i <= stepsX; i++) {
+                const valX = minX + (i / stepsX) * (maxX - minX);
+                const x = toX(valX);
+                ctx.beginPath();
+                ctx.moveTo(x, pad.top);
+                ctx.lineTo(x, pad.top + plotH);
+                ctx.stroke();
+
+                if (i > 0) {
+                    const labelX = state.activeTab === 'dynamic'
+                        ? fmt(valX, 2)
+                        : Math.round(valX * 1e6); // cm^3
+                    ctx.textAlign = 'center';
+                    ctx.fillText(labelX, x, pad.top + plotH + 14);
+                }
+            }
+
+            for (let j = 0; j <= stepsY; j++) {
+                const valY = minY + (j / stepsY) * (maxY - minY);
+                const y = toY(valY);
+                ctx.beginPath();
+                ctx.moveTo(pad.left, y);
+                ctx.lineTo(pad.left + plotW, y);
+                ctx.stroke();
+
+                const labelY = fmt(valY / 1e5, 1); // bar
+                ctx.textAlign = 'right';
+                ctx.fillText(labelY, pad.left - 7, y + 3);
+            }
+
+            // Assi principali
+            ctx.strokeStyle = cAxis;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(pad.left, pad.top);
+            ctx.lineTo(pad.left, pad.top + plotH);
+            ctx.lineTo(pad.left + plotW, pad.top + plotH);
+            ctx.stroke();
+
+            // Etichette Assi
+            ctx.fillStyle = cText;
+            ctx.font = 'bold 11px "Inter", sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('p [bar]', 8, 15);
+            ctx.textAlign = 'right';
+            ctx.fillText(state.activeTab === 'dynamic' ? 'v [m³/kg]' : 'V [cm³]', W - 10, H - 8);
+
+            // Helper per disegnare punti cardinali con cerchio
+            const drawPoint = (x, y, label, color = '#0ea5e9', offset = [8, -8]) => {
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(x, y, 4.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = cBg;
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                ctx.fillStyle = isDark ? '#f8fafc' : '#0f172a';
+                ctx.font = 'bold 11px "JetBrains Mono", monospace';
+                ctx.textAlign = 'left';
+                ctx.fillText(label, x + offset[0], y + offset[1]);
+            };
+
+            // ========================================================================
+            // DISEGNO 1: VOLUMETRICO ALTERNATIVO MONOSTADIO
+            // ========================================================================
+            if (state.activeTab === 'reciprocating') {
+                const { p1, p2, V0, Vc, V1, n } = data;
+
+                // Linea verticale Volume Nocivo V0 e Cilindrata V1
+                ctx.save();
+                ctx.setLineDash([4, 4]);
+                ctx.strokeStyle = 'rgba(245, 158, 11, 0.5)';
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.moveTo(toX(V0), pad.top);
+                ctx.lineTo(toX(V0), pad.top + plotH);
+                ctx.stroke();
+                ctx.restore();
+
+                // Quote V0 e Vc sul fondo
+                ctx.fillStyle = '#f59e0b';
+                ctx.font = '10px "JetBrains Mono", monospace';
+                ctx.textAlign = 'center';
+                if (V0 > 0) ctx.fillText('V₀', toX(V0 / 2), pad.top + plotH - 6);
+                ctx.fillStyle = '#0ea5e9';
+                ctx.fillText('← Cilindrata Vc →', toX(V0 + Vc / 2), pad.top + plotH - 6);
+
+                // Punti del ciclo teorico:
+                // 1: (V1, p1) -> fine aspirazione
+                // 2: (V2, p2) -> fine compressione
+                // 3: (V0, p2) -> fine mandata (PMS)
+                // 4: (V4, p1) -> fine espansione gas residuo
+                const V2 = V1 * Math.pow(p1 / p2, 1 / n);
+                const V4 = V0 * Math.pow(p2 / p1, 1 / n);
+
+                // Costruzione poligono ciclo teorico
+                ctx.beginPath();
+                ctx.moveTo(toX(V4), toY(p1));
+                ctx.lineTo(toX(V1), toY(p1)); // 4 -> 1 Aspirazione
+
+                // 1 -> 2 Compressione politropica
+                const steps = 40;
+                for (let i = 1; i <= steps; i++) {
+                    const p = p1 + (i / steps) * (p2 - p1);
+                    const V = V1 * Math.pow(p1 / p, 1 / n);
+                    ctx.lineTo(toX(V), toY(p));
+                }
+
+                // 2 -> 3 Mandata isobara
+                ctx.lineTo(toX(V0), toY(p2));
+
+                // 3 -> 4 Espansione politropica del volume nocivo
+                for (let i = 1; i <= steps; i++) {
+                    const p = p2 - (i / steps) * (p2 - p1);
+                    const V = V0 * Math.pow(p2 / p, 1 / n);
+                    ctx.lineTo(toX(V), toY(p));
+                }
+                ctx.closePath();
+
+                // Riempimento Area Lavoro Indicato
+                ctx.fillStyle = state.realCycle ? 'rgba(14, 165, 233, 0.12)' : 'rgba(14, 165, 233, 0.25)';
+                ctx.fill();
+                ctx.strokeStyle = '#0ea5e9';
+                ctx.lineWidth = state.realCycle ? 1.5 : 2.5;
+                if (state.realCycle) ctx.setLineDash([5, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Se Ciclo Reale attivo: sovrapponiamo il ciclo indicato reale con battiti valvole e arrotondamenti
+                if (state.realCycle) {
+                    const { p1_eff, p2_eff } = data;
+                    ctx.beginPath();
+                    // Partenza da 3 (PMS) -> espansione con ritardo apertura valvola aspirazione (depressione)
+                    ctx.moveTo(toX(V0), toY(p2_eff));
+                    for (let i = 0; i <= steps; i++) {
+                        const t = i / steps;
+                        const p = p2_eff - Math.pow(t, 0.85) * (p2_eff - p1_eff * 0.88);
+                        const V = V0 + t * (V4 * 1.05 - V0);
+                        ctx.lineTo(toX(V), toY(p));
+                    }
+                    // Aspirazione reale con oscillazione valvola automatica
+                    for (let i = 1; i <= steps; i++) {
+                        const t = i / steps;
+                        const V = (V4 * 1.05) + t * (V1 - V4 * 1.05);
+                        const flutter = Math.sin(t * Math.PI * 5) * Math.exp(-t * 3) * (0.06 * p1);
+                        const p = p1_eff - flutter;
+                        ctx.lineTo(toX(V), toY(p));
+                    }
+                    // Compressione reale
+                    for (let i = 1; i <= steps; i++) {
+                        const t = i / steps;
+                        const p = p1_eff + t * (p2_eff * 1.06 - p1_eff);
+                        const V = V1 * Math.pow(p1_eff / Math.min(p, p2_eff), 1 / n);
+                        ctx.lineTo(toX(Math.max(V0 * 1.02, V)), toY(p));
+                    }
+                    // Mandata reale con sovrapressione apertura valvola e flutter
+                    for (let i = 1; i <= steps; i++) {
+                        const t = i / steps;
+                        const V_start = V1 * Math.pow(p1_eff / p2_eff, 1 / n);
+                        const V = V_start - t * (V_start - V0);
+                        const flutter = Math.sin(t * Math.PI * 5) * Math.exp(-t * 3) * (0.07 * p2);
+                        const p = p2_eff + flutter;
+                        ctx.lineTo(toX(V), toY(p));
+                    }
+                    ctx.closePath();
+                    ctx.fillStyle = 'rgba(244, 63, 94, 0.22)';
+                    ctx.fill();
+                    ctx.strokeStyle = '#f43f5e';
+                    ctx.lineWidth = 2.4;
+                    ctx.stroke();
+                }
+
+                // Punti Cardinali
+                drawPoint(toX(V1), toY(p1), '1', '#0ea5e9', [6, -6]);
+                drawPoint(toX(V2), toY(p2), '2', '#0ea5e9', [6, -6]);
+                drawPoint(toX(V0), toY(p2), '3', '#f59e0b', [-16, -6]);
+                drawPoint(toX(V4), toY(p1), '4', '#f59e0b', [-14, -6]);
+            }
+
+            // ========================================================================
+            // DISEGNO 2: PLURISTADIO INTERREFRIGERATO
+            // ========================================================================
+            if (state.activeTab === 'multistage') {
+                const { p1, p2, p_int1, p_int2, V0, Vc, V1, z, n } = data;
+                const steps = 40;
+
+                // 1) Disegno curva monostadio di riferimento (tratteggiata rossa) + Area Lavoro Risparmiato
+                const V2_mono = V1 * Math.pow(p1 / p2, 1 / n);
+                ctx.beginPath();
+                ctx.moveTo(toX(V1), toY(p1));
+                for (let i = 1; i <= steps; i++) {
+                    const p = p1 + (i / steps) * (p2 - p1);
+                    const V = V1 * Math.pow(p1 / p, 1 / n);
+                    ctx.lineTo(toX(V), toY(p));
+                }
+                ctx.lineTo(toX(V0), toY(p2));
+                ctx.strokeStyle = 'rgba(244, 63, 94, 0.75)';
+                ctx.setLineDash([5, 4]);
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // 2) Curva Isoterma ideale di riferimento (tratteggiata verde)
+                ctx.beginPath();
+                ctx.moveTo(toX(V1), toY(p1));
+                for (let i = 1; i <= steps; i++) {
+                    const p = p1 + (i / steps) * (p2 - p1);
+                    const V = V1 * (p1 / p);
+                    ctx.lineTo(toX(V), toY(p));
+                }
+                ctx.strokeStyle = 'rgba(16, 185, 129, 0.7)';
+                ctx.setLineDash([3, 3]);
+                ctx.lineWidth = 1.6;
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // 3) Costruzione ciclo Pluristadio (2 o 3 stadi) ed evidenziazione area risparmiata
+                const pressures = z === 2 ? [p1, p_int1, p2] : [p1, p_int1, p_int2, p2];
+                const stageColors = ['#0ea5e9', '#6366f1', '#8b5cf6'];
+
+                // Evidenziazione area lavoro risparmiato tra curva monostadio e stadi superiori
+                ctx.beginPath();
+                // Seguiamo i gradini degli stadi dal basso verso l'alto
+                let currV_start = V1;
+                ctx.moveTo(toX(currV_start), toY(p1));
+                for (let s = 0; s < z; s++) {
+                    const pa = pressures[s];
+                    const pb = pressures[s + 1];
+                    // Volume iniziale dello stadio s (riportato sull'isoterma T1!)
+                    const Vs_in = V1 * (p1 / pa);
+                    if (s > 0) {
+                        // Interrefrigerazione isobara fino all'isoterma T1
+                        ctx.lineTo(toX(Vs_in), toY(pa));
+                    }
+                    for (let i = 1; i <= 25; i++) {
+                        const p = pa + (i / 25) * (pb - pa);
+                        const V = Vs_in * Math.pow(pa / p, 1 / n);
+                        ctx.lineTo(toX(V), toY(p));
+                    }
+                }
+                // Ritorno lungo la curva monostadio dall'alto verso il basso per chiudere l'area risparmiata
+                for (let i = steps; i >= 0; i--) {
+                    const p = p1 + (i / steps) * (p2 - p1);
+                    const V = V1 * Math.pow(p1 / p, 1 / n);
+                    ctx.lineTo(toX(V), toY(p));
+                }
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(16, 185, 129, 0.22)'; // Verde smeraldo = Lavoro Risparmiato!
+                ctx.fill();
+
+                // Disegno dei singoli stadi con riempimento
+                for (let s = 0; s < z; s++) {
+                    const pa = pressures[s];
+                    const pb = pressures[s + 1];
+                    const Vs_in = V1 * (p1 / pa);
+                    const Vs_out = Vs_in * Math.pow(pa / pb, 1 / n);
+                    const V0_s = V0 * (p1 / pa); // volume morto scalato dello stadio
+
+                    ctx.beginPath();
+                    ctx.moveTo(toX(V0_s), toY(pa));
+                    ctx.lineTo(toX(Vs_in), toY(pa));
+                    for (let i = 1; i <= 25; i++) {
+                        const p = pa + (i / 25) * (pb - pa);
+                        const V = Vs_in * Math.pow(pa / p, 1 / n);
+                        ctx.lineTo(toX(V), toY(p));
+                    }
+                    ctx.lineTo(toX(V0_s), toY(pb));
+                    ctx.closePath();
+
+                    ctx.fillStyle = s === 0 ? 'rgba(14, 165, 233, 0.22)' : (s === 1 ? 'rgba(99, 102, 241, 0.22)' : 'rgba(139, 92, 246, 0.22)');
+                    ctx.fill();
+                    ctx.strokeStyle = stageColors[s];
+                    ctx.lineWidth = 2.2;
+                    ctx.stroke();
+
+                    // Label Stadio
+                    ctx.fillStyle = stageColors[s];
+                    ctx.font = 'bold 10px "Inter", sans-serif';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(`Stadio ${s + 1}`, toX(V0_s) + 6, toY((pa + pb) / 2) + 3);
+                }
+            }
+
+            // ========================================================================
+            // DISEGNO 3: VOLUMETRICI ROTATIVI (VITE vs LOBI ROOTS)
+            // ========================================================================
+            if (state.activeTab === 'rotary') {
+                const { p1, p2, V1_rot } = data;
+                const steps = 40;
+
+                // Riferimento: curva di compressione interna ideale (adiabatica/politropica)
+                ctx.beginPath();
+                ctx.moveTo(toX(0), toY(p1));
+                ctx.lineTo(toX(V1_rot), toY(p1));
+                for (let i = 1; i <= steps; i++) {
+                    const p = p1 + (i / steps) * (p2 - p1);
+                    const V = V1_rot * Math.pow(p1 / p, 1 / state.n);
+                    ctx.lineTo(toX(V), toY(p));
+                }
+                ctx.lineTo(toX(0), toY(p2));
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(14, 165, 233, 0.16)';
+                ctx.fill();
+                ctx.strokeStyle = '#0ea5e9';
+                ctx.setLineDash([4, 4]);
+                ctx.lineWidth = 1.6;
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                if (data.type === 'roots') {
+                    // Ciclo Lobi Roots: rettangolare (compressione isocora istantanea a V = V1_rot per riflusso)
+                    ctx.beginPath();
+                    ctx.moveTo(toX(0), toY(p1));
+                    ctx.lineTo(toX(V1_rot), toY(p1)); // Aspirazione
+                    ctx.lineTo(toX(V1_rot), toY(p2)); // Compressione isocora esterna (riflusso da mandata!)
+                    ctx.lineTo(toX(0), toY(p2));     // Mandata
+                    ctx.closePath();
+
+                    ctx.strokeStyle = '#f43f5e';
+                    ctx.lineWidth = 2.5;
+                    ctx.stroke();
+
+                    // Evidenzia area dissipata (triangolo mistilineo a destra della curva politropica)
+                    ctx.beginPath();
+                    ctx.moveTo(toX(V1_rot), toY(p1));
+                    ctx.lineTo(toX(V1_rot), toY(p2));
+                    for (let i = steps; i >= 0; i--) {
+                        const p = p1 + (i / steps) * (p2 - p1);
+                        const V = V1_rot * Math.pow(p1 / p, 1 / state.n);
+                        ctx.lineTo(toX(V), toY(p));
+                    }
+                    ctx.closePath();
+                    ctx.fillStyle = 'rgba(244, 63, 94, 0.25)';
+                    ctx.fill();
+
+                    drawPoint(toX(V1_rot), toY(p1), '1', '#0ea5e9', [6, -6]);
+                    drawPoint(toX(V1_rot), toY(p2), '2 (Riflusso)', '#f43f5e', [-75, -8]);
+                } else {
+                    // Compressore a Vite / Palette: compressione interna fino a pi, poi salto isocoro a p2
+                    const { pi, Vi, n } = data;
+                    ctx.beginPath();
+                    ctx.moveTo(toX(0), toY(p1));
+                    ctx.lineTo(toX(V1_rot), toY(p1));
+                    for (let i = 1; i <= steps; i++) {
+                        const p = p1 + (i / steps) * (pi - p1);
+                        const V = V1_rot * Math.pow(p1 / p, 1 / n);
+                        ctx.lineTo(toX(V), toY(p));
+                    }
+                    // Apertura luce di scarico: salto verticale da pi a p2 a volume costante Vi
+                    ctx.lineTo(toX(Vi), toY(p2));
+                    ctx.lineTo(toX(0), toY(p2));
+                    ctx.closePath();
+
+                    ctx.strokeStyle = '#8b5cf6';
+                    ctx.lineWidth = 2.5;
+                    ctx.stroke();
+
+                    // Evidenzia triangolo di perdita per sovra/sotto-compressione se bi != beta
+                    if (Math.abs(pi - p2) > 0.05 * p1) {
+                        ctx.beginPath();
+                        ctx.moveTo(toX(Vi), toY(pi));
+                        ctx.lineTo(toX(Vi), toY(p2));
+                        const V_ideal_p2 = V1_rot * Math.pow(p1 / p2, 1 / n);
+                        ctx.lineTo(toX(V_ideal_p2), toY(p2));
+                        ctx.closePath();
+                        ctx.fillStyle = 'rgba(245, 158, 11, 0.35)';
+                        ctx.fill();
+                    }
+
+                    drawPoint(toX(V1_rot), toY(p1), '1', '#0ea5e9', [6, -6]);
+                    drawPoint(toX(Vi), toY(pi), 'i (luce)', '#8b5cf6', [6, 4]);
+                    drawPoint(toX(Vi), toY(p2), '2', '#f59e0b', [6, -8]);
+                }
+            }
+
+            // ========================================================================
+            // DISEGNO 4: DINAMICO / TURBOCOMPRESSORE (Piano p, v - Lavoro Tecnico)
+            // ========================================================================
+            if (state.activeTab === 'dynamic') {
+                const { p1, p2, v1, v2_iso, v2_is, v2_real, k, n_real } = data;
+                const steps = 50;
+
+                // Area Lavoro Tecnico Reale = integrale da p1 a p2 di v dp (area a sinistra della curva fino all'asse p!)
+                ctx.beginPath();
+                ctx.moveTo(toX(0), toY(p1));
+                ctx.lineTo(toX(v1), toY(p1));
+                for (let i = 1; i <= steps; i++) {
+                    const p = p1 + (i / steps) * (p2 - p1);
+                    const v = v1 * Math.pow(p1 / p, 1 / n_real);
+                    ctx.lineTo(toX(v), toY(p));
+                }
+                ctx.lineTo(toX(0), toY(p2));
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(244, 63, 94, 0.16)';
+                ctx.fill();
+
+                // Evidenzia differenza tra Politropica Reale e Isoentropica Ideale (Lavoro dissipato in attriti)
+                ctx.beginPath();
+                ctx.moveTo(toX(v1), toY(p1));
+                for (let i = 1; i <= steps; i++) {
+                    const p = p1 + (i / steps) * (p2 - p1);
+                    const v = v1 * Math.pow(p1 / p, 1 / n_real);
+                    ctx.lineTo(toX(v), toY(p));
+                }
+                for (let i = steps; i >= 0; i--) {
+                    const p = p1 + (i / steps) * (p2 - p1);
+                    const v = v1 * Math.pow(p1 / p, 1 / k);
+                    ctx.lineTo(toX(v), toY(p));
+                }
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(245, 158, 11, 0.30)';
+                ctx.fill();
+
+                // 1. Curva Isoterma (n = 1) - Verde
+                ctx.beginPath();
+                ctx.moveTo(toX(v1), toY(p1));
+                for (let i = 1; i <= steps; i++) {
+                    const p = p1 + (i / steps) * (p2 - p1);
+                    const v = v1 * (p1 / p);
+                    ctx.lineTo(toX(v), toY(p));
+                }
+                ctx.strokeStyle = '#10b981';
+                ctx.setLineDash([4, 3]);
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // 2. Curva Isoentropica Ideale (k) - Azzurro
+                ctx.beginPath();
+                ctx.moveTo(toX(v1), toY(p1));
+                for (let i = 1; i <= steps; i++) {
+                    const p = p1 + (i / steps) * (p2 - p1);
+                    const v = v1 * Math.pow(p1 / p, 1 / k);
+                    ctx.lineTo(toX(v), toY(p));
+                }
+                ctx.strokeStyle = '#0ea5e9';
+                ctx.lineWidth = 2.4;
+                ctx.stroke();
+
+                // 3. Curva Politropica Reale (n_real > k) - Rosso/Arancio
+                ctx.beginPath();
+                ctx.moveTo(toX(v1), toY(p1));
+                for (let i = 1; i <= steps; i++) {
+                    const p = p1 + (i / steps) * (p2 - p1);
+                    const v = v1 * Math.pow(p1 / p, 1 / n_real);
+                    ctx.lineTo(toX(v), toY(p));
+                }
+                ctx.strokeStyle = '#f43f5e';
+                ctx.lineWidth = 2.6;
+                ctx.stroke();
+
+                // Punti Cardinali
+                drawPoint(toX(v1), toY(p1), '1', '#0ea5e9', [6, -6]);
+                drawPoint(toX(v2_iso), toY(p2), '2_T', '#10b981', [-24, -8]);
+                drawPoint(toX(v2_is), toY(p2), '2_is', '#0ea5e9', [-8, -10]);
+                drawPoint(toX(v2_real), toY(p2), '2', '#f43f5e', [6, -6]);
+            }
+        }
+
+        /**
+         * AGGIORNAMENTO UI: KPI CARDS, LEGENDA E FORMULE TEORICHE
+         */
+        function updateUI(data) {
+            const kpiGrid = document.getElementById('kpiGrid');
+            const legend = document.getElementById('chartLegend');
+            const theory = document.getElementById('theoryBox');
+            const badge = document.getElementById('regimeBadge');
+
+            // Helper per creare card KPI compatte
+            const card = (label, value, unit, accent = 'text-slate-900 dark:text-white', sub = '') => `
+                <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-2.5 shadow-sm">
+                    <div class="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 truncate">${label}</div>
+                    <div class="text-base sm:text-lg font-mono font-extrabold ${accent} mt-0.5 leading-tight">
+                        ${value} <span class="text-[11px] font-normal text-slate-400">${unit}</span>
+                    </div>
+                    ${sub ? `<div class="text-[10px] text-slate-400 mt-0.5 truncate">${sub}</div>` : ''}
+                </div>
+            `;
+
+            const legItem = (color, text, dashed = false) => `
+                <div class="flex items-center gap-1.5">
+                    <span class="w-3.5 h-2 rounded-xs inline-block ${dashed ? 'border-b-2 border-dashed' : ''}" style="background-color: ${dashed ? 'transparent' : color}; border-color: ${color};"></span>
+                    <span class="text-slate-600 dark:text-slate-300 font-medium">${text}</span>
+                </div>
+            `;
+
+            if (state.activeTab === 'reciprocating') {
+                document.getElementById('chartTitle').textContent = 'Ciclo Indicato (p, V) • Alternativo Monostadio';
+                document.getElementById('chartSubtitle').textContent = '4→1 Aspirazione | 1→2 Compressione | 2→3 Mandata | 3→4 Espansione V₀';
+
+                kpiGrid.innerHTML = [
+                    card('Rend. Volumetrico ηᵥ', fmt(data.eta_v * 100, 1), '%', data.eta_v < 0.35 ? 'text-rose-500' : 'text-emerald-500', `Teorico: ${fmt(data.eta_v_th * 100, 1)}%`),
+                    card('Temp. Mandata T₂', fmt(data.T2 - 273.15, 1), '°C', 'text-amber-500', `${fmt(data.T2, 0)} K`),
+                    card('Lavoro Specifico Lᵢ', fmt(data.L_spec / 1000, 1), 'kJ/kg', 'text-sky-500', `${fmt(data.L_ciclo, 1)} J/ciclo`),
+                    card('Potenza Indicata Pᵢ', fmt(data.P_ind_kW, 2), 'kW', 'text-indigo-500', `Portata: ${fmt(data.m_dot * 1000, 1)} g/s`)
+                ].join('');
+
+                legend.innerHTML = [
+                    legItem('#0ea5e9', 'Ciclo Teorico (Area = Lᵢ)', state.realCycle),
+                    state.realCycle ? legItem('#f43f5e', 'Ciclo Reale (Perdite Valvole)') : '',
+                    legItem('#f59e0b', `Volume Nocivo V₀ (${fmt(data.V0 * 1e6, 0)} cm³)`, true)
+                ].join('');
+
+                badge.textContent = state.n < state.k ? `Politropica refrigerata (n=${fmt(state.n,2)} < k)` : (Math.abs(state.n - state.k) < 0.01 ? 'Adiabatica (n = k)' : `Politropica dissipativa (n=${fmt(state.n,2)} > k)`);
+
+                theory.innerHTML = `
+                    <p>• <strong>Rendimento Volumetrico:</strong> <code class="font-mono text-sky-500">ηᵥ = 1 - μ · (β^(1/n) - 1)</code>. All'aumentare di <strong>β</strong> o del volume morto <strong>μ</strong>, il gas residuo espande occupando parte della cilindrata fino a raggiungere <em>ηᵥ = 0</em> per <em>β = (1 + 1/μ)ⁿ</em>.</p>
+                    <p>• <strong>Lavoro Indicato Specifico:</strong> <code class="font-mono text-sky-500">Lᵢ = [n/(n-1)] · R·T₁ · (β^((n-1)/n) - 1)</code>. Nota: il volume nocivo <em>V₀</em> riduce la portata elaborata ma <strong>non</strong> altera il lavoro specifico ideale (l'espansione 3→4 restituisce il lavoro speso per comprimere <em>V₀</em>).</p>
+                `;
+            }
+
+            if (state.activeTab === 'multistage') {
+                document.getElementById('chartTitle').textContent = `Compressione Pluristadio (${data.z} Stadi Interrefrigerati)`;
+                document.getElementById('chartSubtitle').textContent = 'Confronto tra Compressione Monostadio, Pluristadio a T₁ e Isoterma';
+
+                kpiGrid.innerHTML = [
+                    card('β Ottimale Stadio', fmt(data.beta_opt, 2), '[-]', 'text-sky-500', `β_tot = ${fmt(state.beta, 1)}`),
+                    card('Lavoro Risparmiato', fmt(data.workSavedPct, 1), '%', 'text-emerald-500', `-${fmt((data.L_mono - data.L_multi) / 1000, 1)} kJ/kg`),
+                    card('Temp. Uscita Stadio', fmt(data.T_stage_out - 273.15, 1), '°C', 'text-amber-500', `Vs Mono: ${fmt(data.T2_mono - 273.15, 0)} °C`),
+                    card('Rend. Vol. 1° Stadio', fmt(data.eta_v1 * 100, 1), '%', 'text-indigo-500', `Vs Mono: ${fmt(data.eta_v_mono * 100, 1)}%`)
+                ].join('');
+
+                legend.innerHTML = [
+                    legItem('#0ea5e9', 'Stadi di Compressione'),
+                    legItem('#10b981', 'Area Lavoro Risparmiato'),
+                    legItem('#f43f5e', 'Curva Monostadio', true),
+                    legItem('#10b981', 'Isoterma Ideale (T=T₁)', true)
+                ].join('');
+
+                badge.textContent = `z = ${data.z} stadi • β_opt = ${fmt(data.beta_opt, 2)}`;
+
+                theory.innerHTML = `
+                    <p>• <strong>Criterio di Minimo Lavoro (Interrefrigerazione perfetta a T₁):</strong> Suddividendo la compressione in <em>z</em> stadi con rapporti uguali <code class="font-mono text-sky-500">β_opt = ⁿ√β_tot</code> (con radice di indice <em>z</em>), il lavoro specifico totale si riduce a <code class="font-mono text-sky-500">L_tot = z · [n/(n-1)] · R·T₁ · (β_opt^((n-1)/n) - 1)</code>.</p>
+                    <p>• <strong>Vantaggi aggiuntivi:</strong> Abbattimento drastico delle temperature massime (tutela lubrificanti e tenute) e aumento del rendimento volumetrico del 1° stadio poiché <em>β_opt &lt; β_tot</em>.</p>
+                `;
+            }
+
+            if (state.activeTab === 'rotary') {
+                const isRoots = data.type === 'roots';
+                document.getElementById('chartTitle').textContent = isRoots
+                    ? 'Compressore a Lobi (Roots) • Compressione Isocora Esterna'
+                    : 'Compressore a Vite / Palette • Compressione Interna';
+                document.getElementById('chartSubtitle').textContent = isRoots
+                    ? 'Ciclo rettangolare senza riduzione interna del volume'
+                    : `Rapporto interno built-in βᵢ = ${fmt(data.bi, 1)} vs β linea = ${fmt(state.beta, 1)}`;
+
+                let mismatchLabel = 'Adattamento Ottimale (βᵢ = β)';
+                let mismatchColor = 'text-emerald-500';
+                if (!isRoots) {
+                    if (data.bi > state.beta + 0.15) { mismatchLabel = 'Sovracompressione (βᵢ > β)'; mismatchColor = 'text-amber-500'; }
+                    else if (data.bi < state.beta - 0.15) { mismatchLabel = 'Sottocompressione (βᵢ < β)'; mismatchColor = 'text-rose-500'; }
+                } else {
+                    mismatchLabel = 'Riflusso Isocoro Totale';
+                    mismatchColor = 'text-rose-500';
+                }
+
+                kpiGrid.innerHTML = [
+                    card('Lavoro Specifico Reale', fmt(data.L_actual / 1000, 1), 'kJ/kg', 'text-sky-500', `Isoentr.: ${fmt(data.L_is / 1000, 1)} kJ/kg`),
+                    card('Rend. Isoentropico', fmt(data.eta_is * 100, 1), '%', data.eta_is > 0.72 ? 'text-emerald-500' : 'text-rose-500', 'η_is = L_is / L_reale'),
+                    card('Temp. Mandata T₂', fmt(data.T2 - 273.15, 1), '°C', 'text-amber-500', `${fmt(data.T2, 0)} K`),
+                    card('Regime Funzionamento', isRoots ? 'Isocoro' : `βᵢ = ${fmt(data.bi, 1)}`, '', mismatchColor, mismatchLabel)
+                ].join('');
+
+                legend.innerHTML = isRoots ? [
+                    legItem('#f43f5e', 'Ciclo Reale Roots (Area = v₁·Δp)'),
+                    legItem('#0ea5e9', 'Compressione Politropica Ideale', true),
+                    legItem('rgba(244,63,94,0.4)', 'Lavoro Dissipato per Riflusso')
+                ].join('') : [
+                    legItem('#8b5cf6', 'Ciclo Reale Vite/Palette'),
+                    legItem('#0ea5e9', 'Compressione Ideale (βᵢ = β)', true),
+                    legItem('#f59e0b', 'Perdita Sovra/Sottocompressione')
+                ].join('');
+
+                badge.textContent = isRoots ? 'Lobi Roots (β_max consigliato ~ 2)' : mismatchLabel;
+
+                theory.innerHTML = isRoots ? `
+                    <p>• <strong>Compressore a Lobi (Roots):</strong> Non riduce il volume della camera durante il trasporto. All'apertura verso la mandata, il gas ad alta pressione <em>p₂</em> rifluisce nella camera comprimendo isocoricamente il fluido. Il lavoro specifico vale <code class="font-mono text-rose-500">L = v₁ · (p₂ - p₁) = R·T₁·(β - 1)</code>, con rendimento che crolla rapidamente per <em>β &gt; 2</em>.</p>
+                ` : `
+                    <p>• <strong>Compressore a Vite / Palette:</strong> Il rapporto di compressione interno <code class="font-mono text-purple-400">βᵢ = (V₁/Vᵢ)ⁿ</code> è fissato dalla geometria delle luci. Se <em>βᵢ ≠ β</em> (pressione di rete), all'apertura dello scarico avviene un'equalizzazione isocora irreversibile con perdita triangolare sul piano <em>(p, V)</em>.</p>
+                `;
+            }
+
+            if (state.activeTab === 'dynamic') {
+                document.getElementById('chartTitle').textContent = 'Turbocompressore (Assiale / Centrifugo) • Piano (p, v)';
+                document.getElementById('chartSubtitle').textContent = 'Area a sinistra della curva = Lavoro Tecnico L = ∫ v dp';
+
+                kpiGrid.innerHTML = [
+                    card('Rend. Isoentropico η_is', fmt(data.eta_is * 100, 1), '%', 'text-sky-500', `Politropico ηₚ: ${fmt(data.eta_p * 100, 1)}%`),
+                    card('Lavoro Reale (Δh)', fmt(data.L_real / 1000, 1), 'kJ/kg', 'text-rose-500', `Isoentr.: ${fmt(data.L_is / 1000, 1)} kJ/kg`),
+                    card('Temp. Mandata T₂', fmt(data.T2_real - 273.15, 1), '°C', 'text-amber-500', `Ideale T₂_is: ${fmt(data.T2_is - 273.15, 1)} °C`),
+                    card('Esponente Reale n', fmt(data.n_real, 3), '[-]', 'text-purple-500', `Adiabatico k: ${fmt(data.k, 2)}`)
+                ].join('');
+
+                legend.innerHTML = [
+                    legItem('#f43f5e', `Politropica Reale (n=${fmt(data.n_real, 2)})`),
+                    legItem('#0ea5e9', `Isoentropica Ideale (k=${fmt(data.k, 2)})`),
+                    legItem('#10b981', 'Isoterma (n=1)', true),
+                    legItem('#f59e0b', 'Surriscaldamento Attriti (ΔL)')
+                ].join('');
+
+                badge.textContent = `η_is = ${fmt(data.eta_is * 100, 1)}% < ηₚ = ${fmt(data.eta_p * 100, 1)}%`;
+
+                theory.innerHTML = `
+                    <p>• <strong>Lavoro Tecnico (Macchina Aperta):</strong> Per un turbocompressore adiabatico trascurando Δc²/2, il lavoro alle pale è l'integrale lungo l'asse delle ordinate: <code class="font-mono text-sky-500">L = ∫ v dp = Δh = cₚ·(T₂ - T₁)</code>.</p>
+                    <p>• <strong>Effetto Preriscaldamento (Reheat Factor):</strong> Nei compressori gli attriti riscaldano il fluido facendolo divergere verso destra sul piano <em>(p, v)</em> (<em>n &gt; k</em>). Per questo motivo il rendimento isoentropico è sempre <strong>minore</strong> del rendimento politropico: <code class="font-mono text-amber-500">η_is = [β^((k-1)/k) - 1] / [β^((k-1)/(k·ηₚ)) - 1]</code>.</p>
+                `;
+            }
+        }
+
+        /**
+         * RISOLUTORE ANALITICO ESERCIZI D'ESAME (TAB 5)
+         */
+        function solveExamExercise() {
+            const type = document.getElementById('examTypeSelect').value;
+            const p1_bar = parseFloat(document.getElementById('exP1').value) || 1.0;
+            const p2_bar = parseFloat(document.getElementById('exP2').value) || 8.0;
+            const T1_C = parseFloat(document.getElementById('exT1').value) || 20;
+            const param = parseFloat(document.getElementById('exParam').value) || 1.32;
+            const mu = parseFloat(document.getElementById('exMu').value) || 0.05;
+            const Vc_cm3 = parseFloat(document.getElementById('exVc').value) || 600;
+            const N_val = parseFloat(document.getElementById('exN').value) || 1200;
+            const z = parseInt(document.getElementById('exZ').value) || 2;
+
+            const k = state.k;
+            const R = state.R;
+            const cp = (k * R) / (k - 1);
+            const p1 = p1_bar * 1e5;
+            const p2 = p2_bar * 1e5;
+            const T1 = T1_C + 273.15;
+            const beta = p2 / p1;
+            const rho1 = p1 / (R * T1);
+            const Vc = Vc_cm3 * 1e-6;
+
+            const out = document.getElementById('examStepsOutput');
+            const stepBox = (num, title, formula, calc, result) => `
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-xs font-bold text-sky-600 dark:text-sky-400">Passaggio ${num}: ${title}</span>
+                        <span class="text-xs font-mono font-extrabold bg-sky-500/15 text-sky-600 dark:text-sky-300 px-2 py-0.5 rounded">${result}</span>
+                    </div>
+                    <div class="text-[11px] font-mono text-slate-500 dark:text-slate-400">Formula: ${formula}</div>
+                    <div class="text-[11px] font-mono text-slate-700 dark:text-slate-200 mt-0.5">Sostituzione: ${calc}</div>
+                </div>
+            `;
+
+            if (type === 'alt_mono') {
+                const n = param;
+                const eta_v = 1 - mu * (Math.pow(beta, 1 / n) - 1);
+                const T2 = T1 * Math.pow(beta, (n - 1) / n);
+                const L_spec = (n / (n - 1)) * R * T1 * (Math.pow(beta, (n - 1) / n) - 1);
+                const m_dot = rho1 * Vc * eta_v * (N_val / 60);
+                const P_kW = (m_dot * L_spec) / 1000;
+
+                out.innerHTML = [
+                    stepBox(1, 'Rapporto di compressione e densità aspirazione',
+                        'β = p₂ / p₁ ;  ρ₁ = p₁ / (R · T₁)',
+                        `β = ${p2_bar}/${p1_bar} = ${fmt(beta, 2)} ;  ρ₁ = ${p1}/(${R}·${fmt(T1,2)}) = ${fmt(rho1, 3)} kg/m³`,
+                        `β = ${fmt(beta, 2)} | ρ₁ = ${fmt(rho1, 3)} kg/m³`),
+                    stepBox(2, 'Rendimento volumetrico teorico',
+                        'ηᵥ = 1 - μ · (β^(1/n) - 1)',
+                        `ηᵥ = 1 - ${mu} · (${fmt(beta, 2)}^(1/${n}) - 1)`,
+                        `ηᵥ = ${fmt(eta_v * 100, 2)} %`),
+                    stepBox(3, 'Temperatura di fine compressione',
+                        'T₂ = T₁ · β^((n - 1) / n)',
+                        `T₂ = ${fmt(T1, 2)} · ${fmt(beta, 2)}^((${n}-1)/${n})`,
+                        `T₂ = ${fmt(T2, 2)} K (${fmt(T2 - 273.15, 1)} °C)`),
+                    stepBox(4, 'Lavoro indicato specifico',
+                        'Lᵢ = [n / (n - 1)] · R · T₁ · (β^((n-1)/n) - 1)',
+                        `Lᵢ = [${n}/(${n}-1)] · ${R} · ${fmt(T1, 2)} · (${fmt(beta, 2)}^((${n}-1)/${n}) - 1)`,
+                        `Lᵢ = ${fmt(L_spec / 1000, 2)} kJ/kg`),
+                    stepBox(5, 'Portata massica e Potenza indicata (semplice effetto)',
+                        'ṁ = ρ₁ · Vc · ηᵥ · (N / 60) ;  Pᵢ = ṁ · Lᵢ',
+                        `ṁ = ${fmt(rho1,3)} · ${Vc} · ${fmt(eta_v,3)} · (${N_val}/60) = ${fmt(m_dot, 4)} kg/s`,
+                        `Pᵢ = ${fmt(P_kW, 2)} kW`)
+                ].join('');
+            } else if (type === 'alt_multi') {
+                const n = param;
+                const beta_opt = Math.pow(beta, 1 / z);
+                const T_out = T1 * Math.pow(beta_opt, (n - 1) / n);
+                const L_tot = z * (n / (n - 1)) * R * T1 * (Math.pow(beta_opt, (n - 1) / n) - 1);
+                const L_mono = (n / (n - 1)) * R * T1 * (Math.pow(beta, (n - 1) / n) - 1);
+                const eta_v1 = 1 - mu * (Math.pow(beta_opt, 1 / n) - 1);
+                const m_dot = rho1 * Vc * eta_v1 * (N_val / 60);
+                const P_kW = (m_dot * L_tot) / 1000;
+
+                out.innerHTML = [
+                    stepBox(1, 'Rapporto di compressione ottimale per singolo stadio',
+                        'β_opt = (p₂ / p₁)^(1 / z)',
+                        `β_opt = (${fmt(beta, 2)})^(1 / ${z})`,
+                        `β_opt = ${fmt(beta_opt, 3)}`),
+                    stepBox(2, 'Temperatura massima all\'uscita di ogni stadio',
+                        'T_out = T₁ · β_opt^((n - 1) / n)',
+                        `T_out = ${fmt(T1, 2)} · ${fmt(beta_opt, 3)}^((${n}-1)/${n})`,
+                        `T_out = ${fmt(T_out, 2)} K (${fmt(T_out - 273.15, 1)} °C)`),
+                    stepBox(3, 'Lavoro specifico totale e risparmio vs monostadio',
+                        'L_tot = z · [n / (n - 1)] · R · T₁ · (β_opt^((n-1)/n) - 1)',
+                        `L_tot = ${z} · [${n}/(${n}-1)] · ${R} · ${fmt(T1, 2)} · (${fmt(beta_opt,3)}^((${n}-1)/${n}) - 1)`,
+                        `L_tot = ${fmt(L_tot / 1000, 2)} kJ/kg (-${fmt((1 - L_tot/L_mono)*100, 1)}%)`),
+                    stepBox(4, 'Rendimento volumetrico 1° stadio e Potenza totale',
+                        'ηᵥ₁ = 1 - μ · (β_opt^(1/n) - 1) ;  P_tot = ṁ · L_tot',
+                        `ηᵥ₁ = ${fmt(eta_v1 * 100, 2)}% ;  ṁ = ${fmt(m_dot, 4)} kg/s`,
+                        `P_tot = ${fmt(P_kW, 2)} kW`)
+                ].join('');
+            } else if (type === 'turbo') {
+                // Qui param rappresenta il rendimento isoentropico eta_is (se <= 1)
+                const eta_is = param <= 1 ? param : 0.80;
+                const T2_is = T1 * Math.pow(beta, (k - 1) / k);
+                const L_is = cp * (T2_is - T1);
+                const L_real = L_is / eta_is;
+                const T2_real = T1 + L_real / cp;
+                // Ricavo rendimento politropico eta_p dalla relazione inversa:
+                // beta^((k-1)/(k*eta_p)) = T2_real / T1  =>  eta_p = [(k-1)/k] * ln(beta) / ln(T2_real / T1)
+                const eta_p = ((k - 1) / k) * Math.log(beta) / Math.log(T2_real / T1);
+
+                out.innerHTML = [
+                    stepBox(1, 'Temperatura e Lavoro Isoentropico Ideale',
+                        'T₂_is = T₁ · β^((k - 1) / k) ;  L_is = cₚ · (T₂_is - T₁)',
+                        `T₂_is = ${fmt(T1, 2)} · ${fmt(beta, 2)}^((${k}-1)/${k}) = ${fmt(T2_is, 2)} K`,
+                        `L_is = ${fmt(L_is / 1000, 2)} kJ/kg`),
+                    stepBox(2, 'Lavoro Reale alle pale (Incremento di entalpia Δh)',
+                        'L_reale = Δh = L_is / η_is',
+                        `L_reale = ${fmt(L_is / 1000, 2)} / ${eta_is}`,
+                        `L_reale = ${fmt(L_real / 1000, 2)} kJ/kg`),
+                    stepBox(3, 'Temperatura Reale di Mandata T₂',
+                        'T₂ = T₁ + L_reale / cₚ',
+                        `T₂ = ${fmt(T1, 2)} + ${fmt(L_real, 0)} / ${fmt(cp, 1)}`,
+                        `T₂ = ${fmt(T2_real, 2)} K (${fmt(T2_real - 273.15, 1)} °C)`),
+                    stepBox(4, 'Rendimento Politropico Equivalente ηₚ',
+                        'ηₚ = [(k - 1) / k] · ln(β) / ln(T₂ / T₁)',
+                        `ηₚ = [(${k}-1)/${k}] · ln(${fmt(beta, 2)}) / ln(${fmt(T2_real/T1, 4)})`,
+                        `ηₚ = ${fmt(eta_p * 100, 2)} %`)
+                ].join('');
+            }
+        }
+
+        /**
+         * GESTIONE CAMBIO TAB E VISIBILITÀ CONTROLLI
+         */
+        function setActiveTab(tabName) {
+            state.activeTab = tabName;
+
+            // Aggiorna stile bottoni tab
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                const isTarget = btn.dataset.tab === tabName;
+                if (tabName === 'exam' && btn.dataset.tab === 'exam') {
+                    btn.className = 'tab-btn shrink-0 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-amber-500 text-white shadow-sm';
+                } else if (btn.dataset.tab === 'exam') {
+                    btn.className = 'tab-btn shrink-0 px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20';
+                } else if (isTarget) {
+                    btn.className = 'tab-btn shrink-0 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-sky-500 text-white shadow-sm';
+                } else {
+                    btn.className = 'tab-btn shrink-0 px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+                }
+            });
+
+            const simSec = document.getElementById('simulatorSection');
+            const examSec = document.getElementById('examSection');
+
+            if (tabName === 'exam') {
+                simSec.classList.add('hidden');
+                examSec.classList.remove('hidden');
+                solveExamExercise();
+                return;
+            } else {
+                simSec.classList.remove('hidden');
+                examSec.classList.add('hidden');
+            }
+
+            // Mostra/nascondi controlli contestuali
+            document.getElementById('realCycleToggleWrap').classList.toggle('hidden', tabName !== 'reciprocating');
+            document.getElementById('rotarySubtype').classList.toggle('hidden', tabName !== 'rotary');
+            document.getElementById('controlPolytropic').classList.toggle('hidden', tabName === 'dynamic');
+            document.getElementById('controlEtaP').classList.toggle('hidden', tabName !== 'dynamic');
+            document.getElementById('controlMu').classList.toggle('hidden', tabName !== 'reciprocating' && tabName !== 'multistage');
+            document.getElementById('controlStages').classList.toggle('hidden', tabName !== 'multistage');
+            document.getElementById('controlBetaInternal').classList.toggle('hidden', !(tabName === 'rotary' && state.rotaryType === 'screw'));
+            document.getElementById('geometryInputs').classList.toggle('hidden', tabName !== 'reciprocating');
+
+            updateApp();
+        }
+
+        /**
+         * LOOP PRINCIPALE DI AGGIORNAMENTO
+         */
+        function updateApp() {
+            if (state.activeTab === 'exam') return;
+            const data = computeThermodynamics();
+            drawDiagram(data);
+            updateUI(data);
+        }
+
+        /**
+         * BINDING EVENTI SLIDER E INPUT
+         */
+        function bindSyncedInput(sliderId, inputId, stateKey, callback) {
+            const slider = document.getElementById(sliderId);
+            const input = document.getElementById(inputId);
+
+            slider.addEventListener('input', () => {
+                const v = parseFloat(slider.value);
+                input.value = v;
+                state[stateKey] = v;
+                if (callback) callback(v);
+                updateApp();
+            });
+
+            input.addEventListener('change', () => {
+                let v = parseFloat(input.value);
+                const min = parseFloat(slider.min);
+                const max = parseFloat(slider.max);
+                if (isNaN(v)) v = state[stateKey];
+                v = Math.max(min, Math.min(max, v));
+                input.value = v;
+                slider.value = v;
+                state[stateKey] = v;
+                if (callback) callback(v);
+                updateApp();
+            });
+        }
+
+        // Inizializzazione Event Listeners
+        window.addEventListener('DOMContentLoaded', () => {
+            // Tab navigation
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => setActiveTab(btn.dataset.tab));
+            });
+
+            // Fluido
+            document.getElementById('fluidSelect').addEventListener('change', updateFluid);
+            document.getElementById('customK').addEventListener('change', updateFluid);
+            document.getElementById('customR').addEventListener('change', updateFluid);
+
+            // Toggle tema
+            document.getElementById('themeToggle').addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                updateApp();
+            });
+
+            // Sync Sliders & Inputs
+            bindSyncedInput('sliderBeta', 'inputBeta', 'beta');
+            bindSyncedInput('sliderN', 'inputN', 'n');
+            bindSyncedInput('sliderEtaP', 'inputEtaP', 'eta_p');
+            bindSyncedInput('sliderMu', 'inputMu', 'mu');
+            bindSyncedInput('sliderBetaInt', 'inputBetaInt', 'beta_i');
+
+            // P1 e T1 sliders
+            document.getElementById('sliderP1').addEventListener('input', (e) => {
+                state.p1_bar = parseFloat(e.target.value);
+                document.getElementById('valP1').textContent = fmt(state.p1_bar, 1);
+                updateApp();
+            });
+            document.getElementById('sliderT1').addEventListener('input', (e) => {
+                state.T1_C = parseFloat(e.target.value);
+                document.getElementById('valT1').textContent = state.T1_C;
+                updateApp();
+            });
+
+            // Geometria
+            document.getElementById('inputVc').addEventListener('change', (e) => {
+                state.Vc_cm3 = Math.max(1, parseFloat(e.target.value) || 500);
+                updateApp();
+            });
+            document.getElementById('inputRpm').addEventListener('change', (e) => {
+                state.rpm = Math.max(10, parseFloat(e.target.value) || 1500);
+                updateApp();
+            });
+
+            // Toggle Ciclo Reale (Tab 1)
+            document.getElementById('toggleRealCycle').addEventListener('change', (e) => {
+                state.realCycle = e.target.checked;
+                updateApp();
+            });
+
+            // Bottoni numero stadi z (Tab 2)
+            document.querySelectorAll('.z-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    state.z = parseInt(btn.dataset.z);
+                    document.querySelectorAll('.z-btn').forEach(b => {
+                        b.className = b.dataset.z == state.z
+                            ? 'z-btn px-3 py-1 rounded-md text-xs font-bold bg-sky-500 text-white'
+                            : 'z-btn px-3 py-1 rounded-md text-xs font-bold text-slate-600 dark:text-slate-300';
+                    });
+                    updateApp();
+                });
+            });
+
+            // Sottotipo Rotativo (Tab 3)
+            document.getElementById('rotarySubtype').addEventListener('change', (e) => {
+                state.rotaryType = e.target.value;
+                document.getElementById('controlBetaInternal').classList.toggle('hidden', state.rotaryType !== 'screw');
+                updateApp();
+            });
+
+            // Reset parametri default
+            document.getElementById('resetParamsBtn').addEventListener('click', () => {
+                state.p1_bar = 1.0; state.T1_C = 20; state.beta = 6.0; state.n = 1.30;
+                state.eta_p = 0.82; state.mu = 0.06; state.beta_i = 6.0; state.Vc_cm3 = 500; state.rpm = 1500;
+                document.getElementById('sliderBeta').value = document.getElementById('inputBeta').value = 6.0;
+                document.getElementById('sliderN').value = document.getElementById('inputN').value = 1.30;
+                document.getElementById('sliderEtaP').value = document.getElementById('inputEtaP').value = 0.82;
+                document.getElementById('sliderMu').value = document.getElementById('inputMu').value = 0.06;
+                document.getElementById('sliderBetaInt').value = document.getElementById('inputBetaInt').value = 6.0;
+                document.getElementById('sliderP1').value = 1.0; document.getElementById('valP1').textContent = '1.0';
+                document.getElementById('sliderT1').value = 20; document.getElementById('valT1').textContent = '20';
+                document.getElementById('inputVc').value = 500;
+                document.getElementById('inputRpm').value = 1500;
+                updateApp();
+            });
+
+            // Risolutore Esame (Tab 5)
+            document.getElementById('solveExamBtn').addEventListener('click', solveExamExercise);
+            document.getElementById('examTypeSelect').addEventListener('change', solveExamExercise);
+
+            // Resize listener responsivo per il Canvas
+            window.addEventListener('resize', () => {
+                if (state.activeTab !== 'exam') updateApp();
+            });
+
+            // Avvio iniziale
+            setActiveTab('reciprocating');
+        });
+    </script>
+</body>
+</html>
